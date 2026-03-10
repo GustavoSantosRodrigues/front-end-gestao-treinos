@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 
 interface BottomNavProps {
   activePage?: "home" | "calendar";
+  calendarHref?: string;
 }
 
 export async function BottomNav({ activePage = "home" }: BottomNavProps) {
@@ -21,7 +22,7 @@ export async function BottomNav({ activePage = "home" }: BottomNavProps) {
   const calendarHref =
     homeData.status === 200 && homeData.data.todayWorkoutDay
       ? `/workout-plans/${homeData.data.todayWorkoutDay.workoutPlanId}/days/${homeData.data.todayWorkoutDay.id}`
-      : undefined;
+      : null;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-center gap-6 rounded-t-[20px] border border-border bg-background px-6 py-4">
@@ -29,9 +30,7 @@ export async function BottomNav({ activePage = "home" }: BottomNavProps) {
         <House
           className={cn(
             "size-6",
-            activePage === "home"
-              ? "text-foreground"
-              : "text-muted-foreground",
+            activePage === "home" ? "text-foreground" : "text-muted-foreground",
           )}
         />
       </Link>
