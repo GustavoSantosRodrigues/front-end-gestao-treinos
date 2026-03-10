@@ -4,6 +4,6 @@ export const authClient = createAuthClient({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
 });
 
-authClient.signIn.social({
-  provider: "google",
-});
+// authClient.signIn.social({
+//   provider: "google",
+// });

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3001",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -17,10 +17,13 @@
     "card": "^2.5.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dayjs": "^1.11.19",
+    "dotenv": "^17.3.1",
     "init": "^0.1.2",
     "input": "^1.0.1",
     "lucide-react": "^0.577.0",
     "next": "16.1.6",
+    "prettier": "^3.8.1",
     "radix-ui": "^1.4.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
@@ -35,6 +38,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "orval": "^8.1.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
