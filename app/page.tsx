@@ -90,11 +90,19 @@ export default async function Home() {
               today={today}
             />
           </div>
-          <div className="flex items-center gap-2 self-stretch rounded-xl bg-streak px-5 py-2">
-            <Flame className="size-5 text-streak-foreground" />
-            <span className="font-heading text-base font-semibold text-foreground">
-              {workoutStreak}
-            </span>
+          <div
+            className={`flex items-center gap-2 self-stretch rounded-xl px-5 py-2 ${workoutStreak > 0 ? "bg-streak" : "bg-muted"
+              }`}
+          >
+            <Flame
+              className={`size-5 ${workoutStreak > 0 ? "text-streak-foreground" : "text-muted-foreground"
+                }`}
+            />
+            {workoutStreak > 0 && (
+              <span className="font-heading text-base font-semibold text-foreground">
+                {workoutStreak}
+              </span>
+            )}
           </div>
         </div>
       </div>
