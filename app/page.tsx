@@ -21,12 +21,9 @@ export default async function Home() {
 
   const today = dayjs();
   const homeData = await getHomeData(today.format("YYYY-MM-DD"));
-  // console.log("home data", homeData);
-
 
   if (homeData.status !== 200) {
-    console.error("Erro ao buscar homeData:", homeData);
-    throw new Error(`Failed to fetch home data - status: ${homeData.status}`);
+    throw new Error("Failed to fetch home data");
   }
 
   const { todayWorkoutDay, workoutStreak, consistencyByDay } = homeData.data;

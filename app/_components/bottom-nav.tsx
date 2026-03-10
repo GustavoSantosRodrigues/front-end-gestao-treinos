@@ -12,7 +12,6 @@ import { cn } from "@/lib/utils";
 
 interface BottomNavProps {
   activePage?: "home" | "calendar";
-  calendarHref?: string;
 }
 
 export async function BottomNav({ activePage = "home" }: BottomNavProps) {
@@ -20,8 +19,8 @@ export async function BottomNav({ activePage = "home" }: BottomNavProps) {
   const homeData = await getHomeData(today.format("YYYY-MM-DD"));
 
   const calendarHref =
-    homeData.status === 200 && homeData.data.todayWorkoutDay
-      ? `/workout-plans/${homeData.data.todayWorkoutDay.workoutPlanId}/days/${homeData.data.todayWorkoutDay.id}`
+    homeData.status === 200 && homeData.data.activeWorkoutPlanId
+      ? `/workout-plans/${homeData.data.activeWorkoutPlanId}`
       : null;
 
   return (
@@ -30,7 +29,7 @@ export async function BottomNav({ activePage = "home" }: BottomNavProps) {
         <House
           className={cn(
             "size-6",
-            activePage === "home" ? "text-foreground" : "text-muted-foreground",
+            activePage === "home" ? "text-foreground" : "text-muted-foreground"
           )}
         />
       </Link>
@@ -41,7 +40,7 @@ export async function BottomNav({ activePage = "home" }: BottomNavProps) {
               "size-6",
               activePage === "calendar"
                 ? "text-foreground"
-                : "text-muted-foreground",
+                : "text-muted-foreground"
             )}
           />
         </Link>
@@ -52,7 +51,7 @@ export async function BottomNav({ activePage = "home" }: BottomNavProps) {
               "size-6",
               activePage === "calendar"
                 ? "text-foreground"
-                : "text-muted-foreground",
+                : "text-muted-foreground"
             )}
           />
         </button>
