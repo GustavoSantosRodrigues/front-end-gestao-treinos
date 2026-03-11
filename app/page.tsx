@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { authClient } from "@/app/_lib/auth-client";
 import { headers } from "next/headers";
-import { getHomeData } from "./_lib/api/fetch-generated";
+import { getHomeData, getUserTrainData } from "./_lib/api/fetch-generated";
 import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
@@ -20,11 +20,19 @@ export default async function Home() {
   if (!session.data?.user) redirect("/auth");
 
   const today = dayjs();
-  const homeData = await getHomeData(today.format("YYYY-MM-DD"));
+  const [homeData, trainData] = await Promise.all([
+    getHomeData(today.format("YYYY-MM-DD")),
+    getUserTrainData(),
+  ]);
 
   if (homeData.status !== 200) {
     throw new Error("Failed to fetch home data");
   }
+
+  const needsOnboarding =
+    !homeData.data.activeWorkoutPlanId ||
+    (trainData.status === 200 && !trainData.data);
+  if (needsOnboarding) redirect("/onboarding");
 
   const { todayWorkoutDay, workoutStreak, consistencyByDay } = homeData.data;
   const userName = session.data.user.name?.split(" ")[0] ?? "";
@@ -90,19 +98,11 @@ export default async function Home() {
               today={today}
             />
           </div>
-          <div
-            className={`flex items-center gap-2 self-stretch rounded-xl px-5 py-2 ${workoutStreak > 0 ? "bg-streak" : "bg-muted"
-              }`}
-          >
-            <Flame
-              className={`size-5 ${workoutStreak > 0 ? "text-streak-foreground" : "text-muted-foreground"
-                }`}
-            />
-            {workoutStreak > 0 && (
-              <span className="font-heading text-base font-semibold text-foreground">
-                {workoutStreak}
-              </span>
-            )}
+          <div className="flex items-center gap-2 self-stretch rounded-xl bg-streak px-5 py-2">
+            <Flame className="size-5 text-streak-foreground" />
+            <span className="font-heading text-base font-semibold text-foreground">
+              {workoutStreak}
+            </span>
           </div>
         </div>
       </div>
