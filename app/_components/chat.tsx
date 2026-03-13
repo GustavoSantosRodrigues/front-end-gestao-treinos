@@ -12,14 +12,16 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const SUGGESTED_MESSAGES = ["Monte meu plano de treino"];
 
 const chatFormSchema = z.object({
   message: z.string().min(1),
 });
+
 
 type ChatFormValues = z.infer<typeof chatFormSchema>;
 
@@ -29,16 +31,47 @@ interface ChatProps {
 }
 
 export function Chat({ embedded = false, initialMessage }: ChatProps) {
+  const router = useRouter();
+
+
+  const redirectRef = useRef(false);
+
+
   const [chatParams, setChatParams] = useQueryStates({
     chat_open: parseAsBoolean.withDefault(false),
     chat_initial_message: parseAsString,
   });
+
+  // const { messages, sendMessage, status } = useChat({
+  //   transport: new DefaultChatTransport({
+  //     api: `${process.env.NEXT_PUBLIC_API_URL}/ai`,
+  //     credentials: "include",
+  //   }),
+  // });
 
   const { messages, sendMessage, status } = useChat({
     transport: new DefaultChatTransport({
       api: `${process.env.NEXT_PUBLIC_API_URL}/ai`,
       credentials: "include",
     }),
+    onFinish: ({ message }) => {
+      const hasCreated = message.parts.some((part) => {
+        const str = JSON.stringify(part);
+        return str.includes("workoutPlanCreated");
+      });
+
+      if (hasCreated && !redirectRef.current) {
+        redirectRef.current = true;
+        setTimeout(() => {
+          if (embedded) {
+            router.push("/");
+          } else {
+            setChatParams({ chat_open: false });
+            router.push("/");
+          }
+        }, 2000);
+      }
+    },
   });
 
   const form = useForm<ChatFormValues>({
@@ -99,6 +132,8 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
   const handleSuggestion = (text: string) => {
     sendMessage({ text });
   };
+
+
 
   const isStreaming = status === "streaming";
   const isLoading = status === "submitted" || isStreaming;
@@ -172,7 +207,7 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
                   ) : null
                 )
               ) : (
-                <p className="font-heading text-sm leading-relaxed text-primary-foreground">
+                <p className="font-heading text-sm leading-relaxed text-primary-foreground whitespace-pre-wrap">
                   {message.parts
                     .filter((part) => part.type === "text")
                     .map(
@@ -214,10 +249,10 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
               render={({ field }) => (
                 <FormItem className="flex-1">
                   <FormControl>
-                    <Input
+                    <Textarea
                       {...field}
                       placeholder="Digite sua mensagem"
-                      className="rounded-full border-border bg-secondary px-4 py-3 font-heading text-sm text-foreground placeholder:text-muted-foreground"
+                      className="bg-secondary px-4 py-3 font-heading text-sm text-foreground placeholder:text-muted-foreground"
                     />
                   </FormControl>
                 </FormItem>
