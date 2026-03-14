@@ -226,7 +226,7 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
 
       <div className="flex shrink-0 flex-col gap-3">
         {messages.length === 0 && (
-          <div className="flex gap-2.5 overflow-x-auto px-5">
+          <div className="flex gap-2.5 flex-wrap px-5">
             {(embedded ? SUGGESTED_MESSAGES_ONBOARDING : SUGGESTED_MESSAGES_APP).map((suggestion) => (
               <button
                 key={suggestion}
