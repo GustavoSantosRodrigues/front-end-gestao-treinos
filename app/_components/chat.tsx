@@ -253,7 +253,7 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
                     <Textarea
                       {...field}
                       placeholder="Digite sua mensagem"
-                      className="bg-secondary px-4 py-3 font-heading text-sm text-foreground placeholder:text-muted-foreground"
+                      className="bg-secondary px-4 py-3 font-heading text-base text-foreground placeholder:text-muted-foreground max-h-32 overflow-y-auto min-h-0"
                     />
                   </FormControl>
                 </FormItem>
