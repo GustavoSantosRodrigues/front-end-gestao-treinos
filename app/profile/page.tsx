@@ -7,6 +7,7 @@ import { BottomNav } from "@/app/_components/bottom-nav";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Weight, Ruler, BicepsFlexed, User } from "lucide-react";
 import { LogoutButton } from "./_components/logout-button";
+import { WhatsappButton } from "./_components/whatsapp-button";
 
 export default async function ProfilePage() {
   const session = await authClient.getSession({
@@ -128,6 +129,7 @@ export default async function ProfilePage() {
           </div>
         </div>
 
+        <WhatsappButton />
         <LogoutButton />
       </div>
 
