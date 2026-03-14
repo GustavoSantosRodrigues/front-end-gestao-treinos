@@ -113,9 +113,6 @@ export default async function Home() {
             <h2 className="font-heading text-lg font-semibold text-foreground">
               Treino de Hoje
             </h2>
-            <Link href="/workout-plans" className="font-heading text-xs text-primary">
-              Ver treinos
-            </Link>
           </div>
 
           <Link
