@@ -16,7 +16,8 @@ import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-const SUGGESTED_MESSAGES = ["Monte meu plano de treino"];
+const SUGGESTED_MESSAGES_ONBOARDING = ["Monte meu plano de treino"];
+const SUGGESTED_MESSAGES_APP = ["O que posso melhorar no meu treino?", "Tire uma dúvida"];
 
 const chatFormSchema = z.object({
   message: z.string().min(1),
@@ -226,7 +227,7 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
       <div className="flex shrink-0 flex-col gap-3">
         {messages.length === 0 && (
           <div className="flex gap-2.5 overflow-x-auto px-5">
-            {SUGGESTED_MESSAGES.map((suggestion) => (
+            {(embedded ? SUGGESTED_MESSAGES_ONBOARDING : SUGGESTED_MESSAGES_APP).map((suggestion) => (
               <button
                 key={suggestion}
                 onClick={() => handleSuggestion(suggestion)}
