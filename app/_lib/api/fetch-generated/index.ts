@@ -392,6 +392,15 @@ export const GetWorkoutDay200WeekDay = {
   SUNDAY: "SUNDAY",
 } as const;
 
+export type GetWorkoutDay200ExercisesItemLogsItem = {
+  /** @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$ */
+  id: string;
+  setNumber: number;
+  /** @nullable */
+  weightInKg: number | null;
+  repsCompleted: number;
+};
+
 export type GetWorkoutDay200ExercisesItem = {
   /** @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$ */
   id: string;
@@ -402,6 +411,9 @@ export type GetWorkoutDay200ExercisesItem = {
   sets: number;
   reps: number;
   restTimeInSeconds: number;
+  weightSuggestion?: string;
+  notes?: string;
+  logs: GetWorkoutDay200ExercisesItemLogsItem[];
 };
 
 export type GetWorkoutDay200SessionsItem = {
@@ -499,6 +511,91 @@ export type UpdateWorkoutSession404 = {
 export type UpdateWorkoutSession500 = {
   error: string;
   code: string;
+};
+
+export type LogExerciseSetBody = {
+  /**
+   * @minimum 1
+   * @maximum 9007199254740991
+   */
+  setNumber: number;
+  /** @minimum 0 */
+  weightInKg?: number;
+  /**
+   * @minimum 1
+   * @maximum 9007199254740991
+   */
+  repsCompleted: number;
+};
+
+export type LogExerciseSet201 = {
+  id: string;
+  workoutExerciseId: string;
+  workoutSessionId: string;
+  setNumber: number;
+  /** @nullable */
+  weightInKg: number | null;
+  repsCompleted: number;
+  createdAt: string;
+};
+
+export type LogExerciseSet401 = {
+  error: string;
+  code: string;
+};
+
+export type LogExerciseSet404 = {
+  error: string;
+  code: string;
+};
+
+export type LogExerciseSet500 = {
+  error: string;
+  code: string;
+};
+
+export type GetExerciseLogs200LogsItem = {
+  id: string;
+  setNumber: number;
+  /** @nullable */
+  weightInKg: number | null;
+  repsCompleted: number;
+  createdAt: string;
+};
+
+export type GetExerciseLogs200 = {
+  logs: GetExerciseLogs200LogsItem[];
+};
+
+export type GetExerciseLogs401 = {
+  error: string;
+  code: string;
+};
+
+export type GetExerciseLogs500 = {
+  error: string;
+  code: string;
+};
+
+export type PostAiBodyMessagesItemRole =
+  (typeof PostAiBodyMessagesItemRole)[keyof typeof PostAiBodyMessagesItemRole];
+
+export const PostAiBodyMessagesItemRole = {
+  user: "user",
+  assistant: "assistant",
+  system: "system",
+} as const;
+
+export type PostAiBodyMessagesItem = {
+  id: string;
+  role: PostAiBodyMessagesItemRole;
+  content?: string | unknown[];
+  parts: unknown[];
+  createdAt?: unknown;
+};
+
+export type PostAiBody = {
+  messages: PostAiBodyMessagesItem[];
 };
 
 export type Get200 = {
@@ -1084,6 +1181,127 @@ export const updateWorkoutSession = async (
 };
 
 /**
+ * @summary Log an exercise set
+ */
+export type logExerciseSetResponse201 = {
+  data: LogExerciseSet201;
+  status: 201;
+};
+
+export type logExerciseSetResponse401 = {
+  data: LogExerciseSet401;
+  status: 401;
+};
+
+export type logExerciseSetResponse404 = {
+  data: LogExerciseSet404;
+  status: 404;
+};
+
+export type logExerciseSetResponse500 = {
+  data: LogExerciseSet500;
+  status: 500;
+};
+
+export type logExerciseSetResponseSuccess = logExerciseSetResponse201 & {
+  headers: Headers;
+};
+export type logExerciseSetResponseError = (
+  | logExerciseSetResponse401
+  | logExerciseSetResponse404
+  | logExerciseSetResponse500
+) & {
+  headers: Headers;
+};
+
+export type logExerciseSetResponse =
+  | logExerciseSetResponseSuccess
+  | logExerciseSetResponseError;
+
+export const getLogExerciseSetUrl = (
+  workoutPlanId: string,
+  workoutDayId: string,
+  sessionId: string,
+  exerciseId: string,
+) => {
+  return `/workout-plans/${workoutPlanId}/days/${workoutDayId}/sessions/${sessionId}/exercises/${exerciseId}/logs`;
+};
+
+export const logExerciseSet = async (
+  workoutPlanId: string,
+  workoutDayId: string,
+  sessionId: string,
+  exerciseId: string,
+  logExerciseSetBody: LogExerciseSetBody,
+  options?: RequestInit,
+): Promise<logExerciseSetResponse> => {
+  return customFetch<logExerciseSetResponse>(
+    getLogExerciseSetUrl(workoutPlanId, workoutDayId, sessionId, exerciseId),
+    {
+      ...options,
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...options?.headers },
+      body: JSON.stringify(logExerciseSetBody),
+    },
+  );
+};
+
+/**
+ * @summary Get exercise logs
+ */
+export type getExerciseLogsResponse200 = {
+  data: GetExerciseLogs200;
+  status: 200;
+};
+
+export type getExerciseLogsResponse401 = {
+  data: GetExerciseLogs401;
+  status: 401;
+};
+
+export type getExerciseLogsResponse500 = {
+  data: GetExerciseLogs500;
+  status: 500;
+};
+
+export type getExerciseLogsResponseSuccess = getExerciseLogsResponse200 & {
+  headers: Headers;
+};
+export type getExerciseLogsResponseError = (
+  | getExerciseLogsResponse401
+  | getExerciseLogsResponse500
+) & {
+  headers: Headers;
+};
+
+export type getExerciseLogsResponse =
+  | getExerciseLogsResponseSuccess
+  | getExerciseLogsResponseError;
+
+export const getGetExerciseLogsUrl = (
+  workoutPlanId: string,
+  workoutDayId: string,
+  exerciseId: string,
+) => {
+  return `/workout-plans/${workoutPlanId}/days/${workoutDayId}/exercises/${exerciseId}/logs`;
+};
+
+export const getExerciseLogs = async (
+  workoutPlanId: string,
+  workoutDayId: string,
+  exerciseId: string,
+  options?: RequestInit,
+): Promise<getExerciseLogsResponse> => {
+  return customFetch<getExerciseLogsResponse>(
+    getGetExerciseLogsUrl(workoutPlanId, workoutDayId, exerciseId),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};
+
+/**
  * @summary Chat with AI personal trainer
  */
 export type postAiResponse200 = {
@@ -1101,11 +1319,14 @@ export const getPostAiUrl = () => {
 };
 
 export const postAi = async (
+  postAiBody: PostAiBody,
   options?: RequestInit,
 ): Promise<postAiResponse> => {
   return customFetch<postAiResponse>(getPostAiUrl(), {
     ...options,
     method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(postAiBody),
   });
 };
 
