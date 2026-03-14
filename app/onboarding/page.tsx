@@ -19,14 +19,26 @@ export default async function OnboardingPage() {
     getUserTrainData(),
   ]);
 
-  if (
-    homeData.status === 200 &&
-    trainData.status === 200 &&
-    homeData.data.activeWorkoutPlanId &&
-    trainData.data
-  ) {
+  const hasActiveWorkoutPlan =
+    homeData.status === 200 && !!homeData.data?.activeWorkoutPlanId;
+
+  const hasTrainData =
+    trainData.status === 200 && !!trainData.data;
+
+  if (hasActiveWorkoutPlan) {
     redirect("/");
   }
 
-  return <Chat embedded initialMessage="Quero começar a melhorar minha saúde!" />;
+  console.log("hasActiveWorkoutPlan:", hasActiveWorkoutPlan);
+  console.log("homeData:", homeData.status, homeData.data);
+  console.log("trainData:", trainData.status, trainData.data);
+
+  return (
+    <Chat
+      embedded
+      initialMessage={
+        hasTrainData ? undefined : "Quero começar a melhorar minha saúde!"
+      }
+    />
+  );
 }
