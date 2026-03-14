@@ -19,8 +19,16 @@ export default async function SignUpPage() {
                 <Image src="/login-bg.png" alt="" fill className="object-cover pointer-events-none" priority />
             </div>
 
-            <div className="relative z-10 flex justify-center pt-12">
+            <div className="relative z-10 flex flex-col items-center pt-16 gap-6 px-6 text-center">
                 <Image src="/fit-ai-logo.svg" alt="FIT.AI" width={85} height={38} />
+
+                <h1 className="text-white text-2xl font-semibold max-w-xs leading-tight">
+                    Treine de forma mais inteligente.
+                </h1>
+
+                <p className="text-gray-400 text-sm max-w-xs">
+                    Seu plano de treino personalizado começa agora.
+                </p>
             </div>
 
             <div className="flex-1" />
