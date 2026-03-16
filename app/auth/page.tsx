@@ -16,7 +16,6 @@ export default async function AuthPage() {
   return (
     <div className="relative flex min-h-svh flex-col bg-black">
 
-
       <div className="relative z-10 flex flex-col items-center pt-16 gap-6 px-6 text-center">
         <h1 className="text-white text-4xl font-bold">
           GS.AI
@@ -30,8 +29,6 @@ export default async function AuthPage() {
           Seu plano de treino personalizado começa agora.
         </p>
       </div>
-
-
 
       <div className="flex-1" />
 
