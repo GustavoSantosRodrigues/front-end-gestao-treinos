@@ -29,11 +29,9 @@ export default async function Home() {
     throw new Error("Failed to fetch home data");
   }
 
-  const needsOnboarding =
-    !homeData.data.activeWorkoutPlanId ||
-    (trainData.status === 200 && !trainData.data);
+  const needsOnboarding = trainData.status === 200 && !trainData.data;
   if (needsOnboarding) redirect("/onboarding");
-
+  
   const { todayWorkoutDay, workoutStreak, consistencyByDay } = homeData.data;
   const userName = session.data.user.name?.split(" ")[0] ?? "";
 
@@ -61,7 +59,7 @@ export default async function Home() {
           className="relative text-[22px] uppercase leading-[1.15] text-background"
           style={{ fontFamily: "var(--font-anton)" }}
         >
-          Fit.ai
+          GS.ai
         </p>
 
         <div className="relative flex w-full items-end justify-between">

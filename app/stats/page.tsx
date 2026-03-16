@@ -8,6 +8,7 @@ import { BottomNav } from "@/app/_components/bottom-nav";
 import { StreakBanner } from "./_components/streak-banner";
 import { StatsHeatmap } from "./_components/stats-heatmap";
 import { StatCard } from "./_components/stat-card";
+import { LogoAI } from "../_components/logo-ai";
 
 function formatTotalTime(totalSeconds: number): string {
   const hours = Math.floor(totalSeconds / 3600);
@@ -34,9 +35,7 @@ export default async function StatsPage() {
     getUserTrainData(),
   ]);
 
-  const needsOnboarding =
-    (homeData.status === 200 && !homeData.data.activeWorkoutPlanId) ||
-    (trainData.status === 200 && !trainData.data);
+  const needsOnboarding = trainData.status === 200 && !trainData.data;
   if (needsOnboarding) redirect("/onboarding");
 
   if (statsResponse.status !== 200) {
@@ -53,14 +52,7 @@ export default async function StatsPage() {
 
   return (
     <div className="flex min-h-svh flex-col bg-background pb-24">
-      <div className="flex h-14 items-center px-5">
-        <p
-          className="text-[22px] uppercase leading-[1.15] text-foreground"
-          style={{ fontFamily: "var(--font-anton)" }}
-        >
-          Fit.ai
-        </p>
-      </div>
+      <LogoAI />
 
       <div className="px-5">
         <StreakBanner workoutStreak={workoutStreak} />

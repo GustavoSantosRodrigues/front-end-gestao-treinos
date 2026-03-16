@@ -119,6 +119,21 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  const greetingSentRef = useRef(false);
+
+  useEffect(() => {
+    if (!embedded && chatParams.chat_open && !greetingSentRef.current && messages.length === 0) {
+      greetingSentRef.current = true;
+      sendMessage({ text: "oi" });
+    }
+  }, [embedded, chatParams.chat_open, messages.length, sendMessage]);
+
+  useEffect(() => {
+    if (!embedded && !chatParams.chat_open) {
+      greetingSentRef.current = false;
+    }
+  }, [embedded, chatParams.chat_open]);
+
   if (!embedded && !chatParams.chat_open) return null;
 
   const handleClose = () => {
@@ -154,7 +169,7 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
           </div>
           <div className="flex flex-col gap-1.5">
             <span className="font-heading text-base font-semibold text-foreground">
-              Coach AI
+              Trainer AI
             </span>
             <div className="flex items-center gap-1">
               <div className="size-2 rounded-full bg-online" />
@@ -176,51 +191,59 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
       </div>
 
       <div className="flex-1 overflow-y-auto pb-5">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={
-              message.role === "assistant"
-                ? "flex flex-col items-start pl-5 pr-[60px] pt-5"
-                : "flex flex-col items-end pl-[60px] pr-5 pt-5"
-            }
-          >
+        {messages
+          .filter((m) => {
+            const text = m.parts
+              .filter((p) => p.type === "text")
+              .map((p) => (p as { type: "text"; text: string }).text)
+              .join("");
+            return !(m.role === "user" && text === "oi");
+          })
+          .map((message) => (
             <div
+              key={message.id}
               className={
                 message.role === "assistant"
-                  ? "rounded-xl bg-secondary p-3"
-                  : "rounded-xl bg-primary p-3"
+                  ? "flex flex-col items-start pl-5 pr-[60px] pt-5"
+                  : "flex flex-col items-end pl-[60px] pr-5 pt-5"
               }
             >
-              {message.role === "assistant" ? (
-                message.parts.map((part, index) =>
-                  part.type === "text" ? (
-                    <Streamdown
-                      key={index}
-                      isAnimating={
-                        isStreaming &&
-                        messages[messages.length - 1]?.id === message.id
-                      }
-                      className="font-heading text-sm leading-relaxed text-foreground"
-                    >
-                      {part.text}
-                    </Streamdown>
-                  ) : null
-                )
-              ) : (
-                <p className="font-heading text-sm leading-relaxed text-primary-foreground whitespace-pre-wrap">
-                  {message.parts
-                    .filter((part) => part.type === "text")
-                    .map(
-                      (part) =>
-                        (part as { type: "text"; text: string }).text
-                    )
-                    .join("")}
-                </p>
-              )}
+              <div
+                className={
+                  message.role === "assistant"
+                    ? "rounded-xl bg-secondary p-3"
+                    : "rounded-xl bg-primary p-3"
+                }
+              >
+                {message.role === "assistant" ? (
+                  message.parts.map((part, index) =>
+                    part.type === "text" ? (
+                      <Streamdown
+                        key={index}
+                        isAnimating={
+                          isStreaming &&
+                          messages[messages.length - 1]?.id === message.id
+                        }
+                        className="font-heading text-sm leading-relaxed text-foreground"
+                      >
+                        {part.text}
+                      </Streamdown>
+                    ) : null
+                  )
+                ) : (
+                  <p className="font-heading text-sm leading-relaxed text-primary-foreground whitespace-pre-wrap">
+                    {message.parts
+                      .filter((part) => part.type === "text")
+                      .map(
+                        (part) =>
+                          (part as { type: "text"; text: string }).text
+                      )
+                      .join("")}
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
         <div ref={messagesEndRef} />
       </div>
 

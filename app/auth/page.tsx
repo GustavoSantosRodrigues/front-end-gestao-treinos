@@ -15,16 +15,16 @@ export default async function AuthPage() {
 
   return (
     <div className="relative flex min-h-svh flex-col bg-black">
-      {/* <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
-        <Image src="/login-bg.png" alt="" fill className="object-cover pointer-events-none" priority />
-      </div> */}
+
 
       <div className="relative z-10 flex flex-col items-center pt-16 gap-6 px-6 text-center">
-        <Image src="/fit-ai-logo.svg" alt="FIT.AI" width={85} height={38} />
-
-        <h1 className="text-white text-2xl font-semibold max-w-xs leading-tight">
-          Treine de forma mais inteligente.
+        <h1 className="text-white text-4xl font-bold">
+          GS.AI
         </h1>
+
+        <h2 className="text-white text-2xl font-semibold max-w-xs leading-tight">
+          Treine de forma mais inteligente.
+        </h2>
 
         <p className="text-gray-400 text-sm max-w-xs">
           Seu plano de treino personalizado começa agora.
@@ -36,9 +36,9 @@ export default async function AuthPage() {
       <div className="flex-1" />
 
       <div className="relative z-10 flex flex-col items-center gap-8 rounded-t-[20px] bg-primary px-5 pb-10 pt-12">
-        <h1 className="w-full text-center font-heading text-[32px] font-semibold leading-[1.05] text-primary-foreground">
+        <h2 className="w-full text-center font-heading text-[32px] font-semibold leading-[1.05] text-primary-foreground">
           O app que vai transformar a forma como você treina.
-        </h1>
+        </h2>
 
         <div className="flex w-full flex-col gap-4">
           <SignInWithGoogle />

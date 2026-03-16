@@ -20,6 +20,7 @@ export function CompleteWorkoutButton({
   const handleComplete = () => {
     startTransition(async () => {
       await completeWorkoutAction(workoutPlanId, workoutDayId, sessionId);
+      window.dispatchEvent(new Event("workout:completed")); 
     });
   };
 

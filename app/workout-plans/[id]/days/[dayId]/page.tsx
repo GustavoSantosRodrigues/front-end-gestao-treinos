@@ -11,6 +11,9 @@ import { BackButton } from "./_components/back-button";
 import { ExerciseCard } from "./_components/exercise-card";
 import { StartWorkoutButton } from "./_components/start-workout-button";
 import { CompleteWorkoutButton } from "./_components/complete-workout-button";
+import { WorkoutTimer } from "./_components/workoutTimer";
+
+
 
 const WEEKDAY_LABELS: Record<string, string> = {
   MONDAY: "SEGUNDA",
@@ -45,16 +48,13 @@ export default async function WorkoutDayPage({
 
   if (!session.data?.user) redirect("/auth");
 
-  const { id: workoutPlanId, dayId } = await params;
-  const [workoutDayData, homeData, trainData] = await Promise.all([
+  const { id: workoutPlanId,  dayId } = await params;
+  const [workoutDayData, trainData] = await Promise.all([
     getWorkoutDay(workoutPlanId, dayId),
-    getHomeData(dayjs().format("YYYY-MM-DD")),
     getUserTrainData(),
   ]);
 
-  const needsOnboarding =
-    (homeData.status === 200 && !homeData.data.activeWorkoutPlanId) ||
-    (trainData.status === 200 && !trainData.data);
+  const needsOnboarding = trainData.status === 200 && !trainData.data;
   if (needsOnboarding) redirect("/onboarding");
 
   if (workoutDayData.status !== 200) redirect("/");
@@ -110,6 +110,7 @@ export default async function WorkoutDayPage({
             </div>
           </div>
 
+
           <div className="relative flex w-full items-end justify-between">
             <div className="flex flex-col gap-2">
               <h2 className="font-heading text-2xl font-semibold leading-[1.05] text-background">
@@ -141,7 +142,7 @@ export default async function WorkoutDayPage({
               <Button
                 variant="ghost"
                 disabled
-                className="rounded-full px-4 py-2 font-heading text-sm font-semibold text-background/70 hover:bg-transparent hover:text-background/70"
+                className="rounded-full px-4 py-2 font-heading text-lg font-semibold text-blue-400"
               >
                 Concluído!
               </Button>
@@ -149,6 +150,13 @@ export default async function WorkoutDayPage({
           </div>
         </div>
       </div>
+
+
+      {hasInProgressSession && (
+        <div className="px-5 pt-3">
+          <WorkoutTimer />
+        </div>
+      )}
 
       <div className="flex flex-col gap-3 px-5 pt-5">
         {exercises

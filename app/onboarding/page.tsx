@@ -25,10 +25,6 @@ export default async function OnboardingPage() {
   const hasTrainData =
     trainData.status === 200 && !!trainData.data;
 
-  if (hasActiveWorkoutPlan) {
-    redirect("/");
-  }
-
   console.log("hasActiveWorkoutPlan:", hasActiveWorkoutPlan);
   console.log("homeData:", homeData.status, homeData.data);
   console.log("trainData:", trainData.status, trainData.data);

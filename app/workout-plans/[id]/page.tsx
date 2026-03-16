@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { BottomNav } from "@/app/_components/bottom-nav";
 import { WorkoutDayCard } from "@/app/_components/workout-day-card";
 import { RestDayCard } from "../_components/rest-day-card";
+import { LogoAI } from "@/app/_components/logo-ai";
 
 
 const WEEKDAY_ORDER = [
@@ -36,15 +37,12 @@ export default async function WorkoutPlanPage({
   if (!session.data?.user) redirect("/auth");
 
   const { id } = await params;
-  const [workoutPlanData, homeData, trainData] = await Promise.all([
+  const [workoutPlanData, trainData] = await Promise.all([
     getWorkoutPlan(id),
-    getHomeData(dayjs().format("YYYY-MM-DD")),
     getUserTrainData(),
   ]);
 
-  const needsOnboarding =
-    (homeData.status === 200 && !homeData.data.activeWorkoutPlanId) ||
-    (trainData.status === 200 && !trainData.data);
+  const needsOnboarding = trainData.status === 200 && !trainData.data;
   if (needsOnboarding) redirect("/onboarding");
 
   if (workoutPlanData.status !== 200) redirect("/");
@@ -76,12 +74,7 @@ export default async function WorkoutPlanPage({
           />
         </div>
 
-        <p
-          className="relative text-[22px] uppercase leading-[1.15] text-background"
-          style={{ fontFamily: "var(--font-anton)" }}
-        >
-          Fit.ai
-        </p>
+        <LogoAI />
 
         <div className="relative flex w-full items-end justify-between">
           <div className="flex flex-col gap-3">
