@@ -27,6 +27,8 @@ const anton = Anton({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://app.gustavodevsr.xyz"),
+
   title: "GS.AI",
   description: "O app que vai transformar a forma como você treina.",
   manifest: "/site.webmanifest",
@@ -34,11 +36,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: "GS.AI",
     description: "O app que vai transformar a forma como você treina.",
-    url: "https://app.gustavodevsr.xyz",
+    url: "/",
     siteName: "GS.AI",
     images: [
       {
-        url: "https://app.gustavodevsr.xyz/og-image.png",
+        url: "/og-image-gs-ai.png",
         width: 1200,
         height: 630,
         alt: "GS.AI",
@@ -52,7 +54,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "GS.AI",
     description: "O app que vai transformar a forma como você treina.",
-    images: ["https://app.gustavodevsr.xyz/og-image.png"],
+    images: ["/og-image-gs-ai.png"],
   },
 
   icons: {
