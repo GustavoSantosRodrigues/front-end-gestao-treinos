@@ -30,6 +30,31 @@ export const metadata: Metadata = {
   title: "GS.AI",
   description: "O app que vai transformar a forma como você treina.",
   manifest: "/site.webmanifest",
+
+  openGraph: {
+    title: "GS.AI",
+    description: "O app que vai transformar a forma como você treina.",
+    url: "https://app.gustavodevsr.xyz",
+    siteName: "GS.AI",
+    images: [
+      {
+        url: "https://app.gustavodevsr.xyz/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "GS.AI",
+      },
+    ],
+    locale: "pt_BR",
+    type: "website",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "GS.AI",
+    description: "O app que vai transformar a forma como você treina.",
+    images: ["https://app.gustavodevsr.xyz/og-image.png"],
+  },
+
   icons: {
     icon: [
       { url: "/favicon.ico" },
@@ -41,10 +66,11 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
     shortcut: "/favicon.ico",
   },
+
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "FIT.AI",
+    title: "GS.AI",
   },
 };
 
