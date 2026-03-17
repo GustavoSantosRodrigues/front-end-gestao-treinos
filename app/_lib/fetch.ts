@@ -12,6 +12,7 @@ const getUrl = (contextUrl: string): string => {
 
 const getHeaders = async (headers?: HeadersInit): Promise<HeadersInit> => {
   const _cookies = await cookies();
+
   return {
     ...headers,
     cookie: _cookies.toString(),
@@ -20,7 +21,7 @@ const getHeaders = async (headers?: HeadersInit): Promise<HeadersInit> => {
 
 export const customFetch = async <T>(
   url: string,
-  options: RequestInit
+  options: RequestInit = {}
 ): Promise<T> => {
   const requestUrl = getUrl(url);
   const requestHeaders = await getHeaders(options.headers);
@@ -29,10 +30,15 @@ export const customFetch = async <T>(
     ...options,
     headers: requestHeaders,
     credentials: "include",
+    cache: "no-store",
   };
 
   const response = await fetch(requestUrl, requestInit);
   const data = await getBody<T>(response);
 
-  return { status: response.status, data, headers: response.headers } as T;
+  return {
+    status: response.status,
+    data,
+    headers: response.headers,
+  } as T;
 };
