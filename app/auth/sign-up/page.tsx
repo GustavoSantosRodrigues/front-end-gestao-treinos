@@ -13,7 +13,7 @@ export default async function SignUpPage() {
     if (session.data?.user) redirect("/");
 
     return (
-        <div className="relative flex min-h-svh flex-col bg-black overflow-hidden">
+        <div className="relative flex min-h-svh flex-col bg-primary overflow-y-auto">
             <div className="absolute inset-0" aria-hidden="true">
                 <Image
                     src="/home-banner.jpg"
@@ -22,9 +22,7 @@ export default async function SignUpPage() {
                     className="object-cover object-center"
                     priority
                 />
-
                 <div className="absolute inset-0 bg-black/55" />
-
                 <div
                     className="absolute inset-0"
                     style={{
@@ -35,14 +33,10 @@ export default async function SignUpPage() {
             </div>
 
             <div className="relative z-10 flex flex-col items-center px-6 pt-16 text-center">
-
-                <h1 className="text-white text-4xl font-bold">
-                    GS.AI
-                </h1>
+                <h1 className="text-white text-4xl font-bold">GS.AI</h1>
                 <h2 className="max-w-xs text-2xl font-semibold leading-tight text-white">
                     Treine de forma mais inteligente.
                 </h2>
-
                 <p className="mt-4 max-w-xs text-sm text-gray-300">
                     Seu plano de treino personalizado começa agora.
                 </p>
@@ -57,7 +51,6 @@ export default async function SignUpPage() {
 
                 <div className="flex w-full flex-col gap-4">
                     <SignUpWithEmail />
-
                     <p className="text-center font-heading text-xs text-primary-foreground/70">
                         Já tem conta?{" "}
                         <Link href="/auth" className="underline text-primary-foreground">

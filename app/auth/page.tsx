@@ -14,7 +14,7 @@ export default async function AuthPage() {
   if (session.data?.user) redirect("/");
 
   return (
-    <div className="relative flex min-h-svh flex-col bg-black">
+    <div className="relative flex min-h-svh flex-col bg-black overflow-y-auto">
 
       <div className="relative z-10 flex flex-col items-center pt-16 gap-6 px-6 text-center">
         <h1 className="text-white text-4xl font-bold">
@@ -30,9 +30,7 @@ export default async function AuthPage() {
         </p>
       </div>
 
-      <div className="flex-1" />
-
-      <div className="relative z-10 flex flex-col items-center gap-8 rounded-t-[20px] bg-primary px-5 pb-10 pt-12">
+      <div className="relative z-10 flex flex-col items-center gap-8 rounded-t-[20px] bg-primary px-5 pb-10 pt-12 mt-12">
         <h2 className="w-full text-center font-heading text-[32px] font-semibold leading-[1.05] text-primary-foreground">
           O app que vai transformar a forma como você treina.
         </h2>

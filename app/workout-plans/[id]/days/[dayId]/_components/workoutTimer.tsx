@@ -3,8 +3,20 @@
 import { useState, useEffect, useRef } from "react";
 import { Play, Pause, Flame } from "lucide-react";
 
+const STORAGE_KEY = "workout_timer_start";
+
+function getInitialSeconds(): number {
+  if (typeof window === "undefined") return 0;
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (stored) {
+    return Math.floor((Date.now() - parseInt(stored)) / 1000);
+  }
+  localStorage.setItem(STORAGE_KEY, Date.now().toString());
+  return 0;
+}
+
 export function WorkoutTimer() {
-  const [seconds, setSeconds] = useState(0);
+  const [seconds, setSeconds] = useState<number>(getInitialSeconds);
   const [running, setRunning] = useState(true);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -21,9 +33,11 @@ export function WorkoutTimer() {
     };
   }, [running]);
 
-  // Pausa automaticamente quando o treino é concluído
   useEffect(() => {
-    const handler = () => setRunning(false);
+    const handler = () => {
+      setRunning(false);
+      localStorage.removeItem(STORAGE_KEY);
+    };
     window.addEventListener("workout:completed", handler);
     return () => window.removeEventListener("workout:completed", handler);
   }, []);
@@ -45,7 +59,6 @@ export function WorkoutTimer() {
               Em treino
             </span>
           </div>
-          {/* Sempre formato 00:00:00 */}
           <div className="flex items-end gap-1 tabular-nums">
             <span className="font-heading text-4xl font-black text-background">
               {String(h).padStart(2, "0")}
