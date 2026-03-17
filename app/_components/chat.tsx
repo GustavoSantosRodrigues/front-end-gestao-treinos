@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useQueryStates, parseAsBoolean, parseAsString } from "nuqs";
@@ -43,18 +43,18 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
     chat_initial_message: parseAsString,
   });
 
-  // const { messages, sendMessage, status } = useChat({
-  //   transport: new DefaultChatTransport({
-  //     api: `${process.env.NEXT_PUBLIC_API_URL}/ai`,
-  //     credentials: "include",
-  //   }),
-  // });
+  const [rateLimitError, setRateLimitError] = useState(false);
 
   const { messages, sendMessage, status } = useChat({
     transport: new DefaultChatTransport({
       api: `${process.env.NEXT_PUBLIC_API_URL}/ai`,
       credentials: "include",
     }),
+    onError: (error) => {
+      if (error.message.includes("429") || error.message.includes("rate")) {
+        setRateLimitError(true);
+      }
+    },
     onFinish: ({ message }) => {
       const hasCreated = message.parts.some((part) => {
         const str = JSON.stringify(part);
@@ -134,17 +134,27 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
     }
   }, [embedded, chatParams.chat_open]);
 
+  useEffect(() => {
+    if (status === "error") {
+      setRateLimitError(true);
+    }
+  }, [status]);
+
   if (!embedded && !chatParams.chat_open) return null;
 
   const handleClose = () => {
     setChatParams({ chat_open: false, chat_initial_message: null });
   };
-
-  const onSubmit = (values: ChatFormValues) => {
-    sendMessage({ text: values.message });
+  const onSubmit = async (values: ChatFormValues) => {
+    try {
+      await sendMessage({ text: values.message });
+    } catch (error: unknown) {
+      if (error instanceof Error && (error.message.includes("429") || error.message.includes("rate"))) {
+        setRateLimitError(true);
+      }
+    }
     form.reset();
   };
-
   const handleSuggestion = (text: string) => {
     sendMessage({ text });
   };
@@ -153,6 +163,7 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
 
   const isStreaming = status === "streaming";
   const isLoading = status === "submitted" || isStreaming;
+
 
   const chatContent = (
     <div
@@ -262,6 +273,13 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
           </div>
         )}
 
+        {rateLimitError && (
+          <div className="mx-5 mb-3 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3">
+            <p className="text-center font-heading text-xs text-red-400">
+              Você atingiu o limite de mensagens diário. Tente novamente amanhã.
+            </p>
+          </div>
+        )}
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
