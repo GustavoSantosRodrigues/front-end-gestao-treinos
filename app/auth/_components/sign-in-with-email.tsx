@@ -7,9 +7,10 @@ import { authClient } from "@/app/_lib/auth-client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Eye, EyeOff } from "lucide-react";
 
 const schema = z.object({
-  email: z.string().email("Email inválido"),
+  email: z.email("Email inválido"),
   password: z.string().min(6, "Senha deve ter no mínimo 6 caracteres"),
 });
 
@@ -21,6 +22,7 @@ export const SignInWithEmail = () => {
   const router = useRouter();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const { register, handleSubmit, formState: { errors } } = useForm<Values>({
     resolver: zodResolver(schema),
@@ -50,7 +52,21 @@ export const SignInWithEmail = () => {
         {errors.email && <p className="font-heading text-xs text-red-300 pl-3">{errors.email.message}</p>}
       </div>
       <div className="flex flex-col gap-1">
-        <input {...register("password")} type="password" placeholder="Sua senha" className={inputClass} />
+        <div className="relative">
+          <input
+            {...register("password")}
+            type={showPassword ? "text" : "password"}
+            placeholder="Sua senha"
+            className={`${inputClass} pr-12`}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((v) => !v)}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white"
+          >
+            {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+          </button>
+        </div>
         {errors.password && <p className="font-heading text-xs text-red-300 pl-3">{errors.password.message}</p>}
       </div>
       {error && <p className="text-center font-heading text-xs text-red-300">{error}</p>}

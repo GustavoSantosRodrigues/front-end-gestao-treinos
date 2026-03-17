@@ -30,6 +30,13 @@ export default async function AuthPage() {
         </p>
       </div>
 
+      {/* Banner de aviso de desenvolvimento */}
+      <div className="relative z-10 mx-5 mt-6 rounded-xl border border-yellow-500/30 bg-yellow-500/10 px-4 py-3">
+        <p className="text-center font-heading text-xs text-yellow-300">
+          🚧 App em versão de teste. Caso encontre alguma falha ou tenha sugestões, nos avise pelo suporte no seu perfil dentro do app.
+        </p>
+      </div>
+
       <div className="relative z-10 flex flex-col items-center gap-8 rounded-t-[20px] bg-primary px-5 pb-10 pt-12 mt-12">
         <h2 className="w-full text-center font-heading text-[32px] font-semibold leading-[1.05] text-primary-foreground">
           O app que vai transformar a forma como você treina.
