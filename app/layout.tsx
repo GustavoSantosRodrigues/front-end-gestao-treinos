@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { Anton, Geist, Geist_Mono, Inter_Tight } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Chat } from "@/app/_components/chat";
+import { UpdateNotification } from "@/app/_components/update-notification";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -95,6 +96,7 @@ export default function RootLayout({
           <Suspense>
             <Chat />
           </Suspense>
+          <UpdateNotification />
         </NuqsAdapter>
       </body>
     </html>
