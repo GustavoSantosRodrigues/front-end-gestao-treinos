@@ -113,7 +113,7 @@ export default async function NutritionDayPage({
       </div>
 
       {/* Refeições */}
-      <div className="flex flex-col gap-3 px-5 pt-5">
+      <div className="flex flex-col gap-3 px-5 pt-5 pb-32">
         {sortedMeals.map((meal) => (
           <MealCard key={meal.id} meal={meal} />
         ))}
