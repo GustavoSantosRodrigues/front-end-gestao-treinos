@@ -5,10 +5,13 @@ import { getHomeData, getUserTrainData } from "./_lib/api/fetch-generated";
 import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
-import { Flame } from "lucide-react";
 import { BottomNav } from "./_components/bottom-nav";
 import { ConsistencyTracker } from "./_components/consistency-tracker";
 import { WorkoutDayCard } from "./_components/workout-day-card";
+import { listNutritionPlans } from "./_lib/api/fetch-generated";
+import { Flame, Beef, Wheat, Droplets } from "lucide-react";
+import type { NutritionPlan, NutritionDay } from "./_lib/api/nutrition-types";
+import { JS_TO_WEEKDAY } from "./_lib/api/nutrition-types";
 
 export default async function Home() {
   const session = await authClient.getSession({
@@ -20,10 +23,21 @@ export default async function Home() {
   if (!session.data?.user) redirect("/auth");
 
   const today = dayjs();
-  const [homeData, trainData] = await Promise.all([
+  const [homeData, trainData, plansData] = await Promise.all([
     getHomeData(today.format("YYYY-MM-DD")),
     getUserTrainData(),
+    listNutritionPlans(),
   ]);
+
+  const plans = (plansData.data as unknown as NutritionPlan[]) ?? [];
+  const activePlan = plans.find((p) => p.isActive) ?? null;
+
+  const todayEnum = JS_TO_WEEKDAY[today.day()];
+  const todayNutritionDay: NutritionDay | null = activePlan
+    ? activePlan.days.length === 1 && activePlan.days[0].weekDay === null
+      ? activePlan.days[0]
+      : (activePlan.days.find((d) => d.weekDay === todayEnum) ?? activePlan.days[0])
+    : null;
 
   if (homeData.status !== 200) {
     throw new Error("Failed to fetch home data");
@@ -31,7 +45,7 @@ export default async function Home() {
 
   const needsOnboarding = trainData.status === 200 && !trainData.data;
   if (needsOnboarding) redirect("/onboarding");
-  
+
   const { todayWorkoutDay, workoutStreak, consistencyByDay } = homeData.data;
   const userName = session.data.user.name?.split(" ")[0] ?? "";
 
@@ -126,6 +140,68 @@ export default async function Home() {
               coverImageUrl={todayWorkoutDay.coverImageUrl}
             />
           </Link>
+        </div>
+      )}
+
+      {todayNutritionDay && activePlan && (
+        <div className="flex flex-col gap-3 px-5 pb-5">
+          <div className="flex items-center justify-between">
+            <h2 className="font-heading text-lg font-semibold text-foreground">
+              Nutrição de Hoje
+            </h2>
+            <Link
+              href={`/nutrition/${activePlan.id}/days/${todayNutritionDay.id}`}
+              className="font-heading text-xs text-primary"
+            >
+              Ver refeições
+            </Link>
+          </div>
+
+          <div className="rounded-xl border border-border p-5">
+            <div className="mb-4 flex items-center gap-1">
+              <Flame className="size-5 text-orange-500" />
+              <span className="font-heading text-2xl font-semibold">
+                {todayNutritionDay.totalCalories}
+              </span>
+              <span className="text-sm text-muted-foreground">kcal/dia</span>
+            </div>
+
+            <div className="flex gap-6">
+              <div className="flex items-center gap-1.5">
+                <Beef className="size-4 text-red-400" />
+                <div className="flex flex-col">
+                  <span className="font-heading text-sm font-semibold">
+                    {todayNutritionDay.totalProtein}g
+                  </span>
+                  <span className="font-heading text-xs text-muted-foreground">
+                    Proteína
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Wheat className="size-4 text-yellow-400" />
+                <div className="flex flex-col">
+                  <span className="font-heading text-sm font-semibold">
+                    {todayNutritionDay.totalCarbs}g
+                  </span>
+                  <span className="font-heading text-xs text-muted-foreground">
+                    Carboidratos
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Droplets className="size-4 text-blue-400" />
+                <div className="flex flex-col">
+                  <span className="font-heading text-sm font-semibold">
+                    {todayNutritionDay.totalFat}g
+                  </span>
+                  <span className="font-heading text-xs text-muted-foreground">
+                    Gordura
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
