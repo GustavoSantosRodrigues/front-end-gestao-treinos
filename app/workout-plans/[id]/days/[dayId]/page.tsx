@@ -1,17 +1,16 @@
 import { redirect } from "next/navigation";
 import { authClient } from "@/app/_lib/auth-client";
 import { headers } from "next/headers";
-import { getWorkoutDay, getHomeData, getUserTrainData } from "@/app/_lib/api/fetch-generated";
-import dayjs from "dayjs";
+import { getWorkoutDay, getUserTrainData } from "@/app/_lib/api/fetch-generated";
 import Image from "next/image";
 import { Calendar, Timer, Dumbbell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BottomNav } from "@/app/_components/bottom-nav";
 import { BackButton } from "./_components/back-button";
 import { ExerciseCard } from "./_components/exercise-card";
-import { StartWorkoutButton } from "./_components/start-workout-button";
 import { CompleteWorkoutButton } from "./_components/complete-workout-button";
 import { WorkoutTimer } from "./_components/workoutTimer";
+import { StartWorkoutButton } from "../../../../_components/start-workout-button";
 
 
 

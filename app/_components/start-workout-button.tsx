@@ -9,15 +9,13 @@ import type { GetHomeData200TodayWorkoutDaySessionStatus } from "@/app/_lib/api/
 interface StartWorkoutButtonProps {
   workoutPlanId: string;
   workoutDayId: string;
-  sessionStatus: GetHomeData200TodayWorkoutDaySessionStatus;
+  sessionStatus?: GetHomeData200TodayWorkoutDaySessionStatus;
   sessionId?: string;
 }
-
 export function StartWorkoutButton({
   workoutPlanId,
   workoutDayId,
-  sessionStatus,
-  sessionId,
+  sessionStatus = "not_started",
 }: StartWorkoutButtonProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
