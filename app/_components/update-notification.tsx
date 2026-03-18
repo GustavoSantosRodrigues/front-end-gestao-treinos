@@ -47,6 +47,7 @@ export function UpdateNotification() {
         <li className="font-heading text-xs text-background/70">🥗 Plano nutricional com IA</li>
         <li className="font-heading text-xs text-background/70">⚡ Botão de iniciar treino na home</li>
         <li className="font-heading text-xs text-background/70">🏠 Resumo de macros na home</li>
+        <li className="font-heading text-xs text-background/70">🧪 Teste de notificação</li>s
       </ul>
     </div>
   );
