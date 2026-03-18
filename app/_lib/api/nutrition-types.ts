@@ -59,6 +59,16 @@ export type NutritionPlan = {
   updatedAt: string
 }
 
+export const JS_TO_WEEKDAY: WeekDay[] = [
+  "SUNDAY",
+  "MONDAY",
+  "TUESDAY",
+  "WEDNESDAY",
+  "THURSDAY",
+  "FRIDAY",
+  "SATURDAY",
+]
+
 export type NutritionDayWithPlan = NutritionDay & {
   nutritionPlan: Pick<
     NutritionPlan,
