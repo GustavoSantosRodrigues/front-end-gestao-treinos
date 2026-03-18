@@ -4,11 +4,12 @@ import { headers } from "next/headers";
 import { listNutritionPlans, getUserTrainData } from "@/app/_lib/api/fetch-generated";
 import Image from "next/image";
 import Link from "next/link";
-import { Salad } from "lucide-react";
+import { AlertTriangle, Salad } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { BottomNav } from "@/app/_components/bottom-nav";
 import { LogoAI } from "@/app/_components/logo-ai";
 import { NutritionDayCard } from "./_components/nutrition-day-card";
+import { NutritionChat } from "./_components/nutrition-chat";
 import type { NutritionPlan } from "@/app/_lib/api/nutrition-types";
 
 const WEEKDAY_ORDER = [
@@ -53,6 +54,7 @@ export default async function NutritionPage() {
             </p>
           </div>
         </div>
+        <NutritionChat />
         <BottomNav activePage="nutrition" />
       </div>
     );
@@ -97,6 +99,13 @@ export default async function NutritionPage() {
             </h1>
           </div>
         </div>
+      </div>
+
+      <div className="mx-5 mt-5 flex items-start gap-3 rounded-xl border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-800 dark:bg-yellow-950">
+        <AlertTriangle className="mt-0.5 size-4 shrink-0 text-yellow-600 dark:text-yellow-400" />
+        <p className="font-heading text-xs text-yellow-700 dark:text-yellow-300">
+          Este é um plano alimentar de apoio gerado por IA. Para melhores resultados, consulte um nutricionista.
+        </p>
       </div>
 
       <div className="flex flex-col gap-3 p-5">
