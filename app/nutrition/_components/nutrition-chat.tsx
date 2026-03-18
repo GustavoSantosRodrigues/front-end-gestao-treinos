@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { Salad, X, ArrowUp, Sparkles } from "lucide-react";
+import { Salad, X, ArrowUp, UtensilsCrossed } from "lucide-react";
 import { Streamdown } from "streamdown";
 import "streamdown/styles.css";
 import { useForm } from "react-hook-form";
@@ -16,9 +16,9 @@ import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 
 const SUGGESTED_MESSAGES = [
-  "Montar minha dieta",
-  "Quero emagrecer",
-  "Quero ganhar massa",
+  "🥗 Montar minha dieta",
+  "🔥 Quero emagrecer",
+  "💪 Quero ganhar massa",
 ] as const;
 
 const chatFormSchema = z.object({
@@ -59,13 +59,12 @@ export function NutritionChat() {
       }
     },
     onFinish: ({ message }) => {
-      const hasCreated = message.parts.some((part) =>
-        JSON.stringify(part).includes("nutritionPlanCreated")
-      );
+      const str = message.parts.map((p) => JSON.stringify(p)).join("");
+      const hasCreated = str.includes("nutritionPlanCreated");
+      const hasUpdated = str.includes("nutritionPlanUpdated");
 
-      if (hasCreated && !redirectRef.current) {
+      if ((hasCreated || hasUpdated) && !redirectRef.current) {
         redirectRef.current = true;
-
         refreshTimeoutRef.current = setTimeout(() => {
           setOpen(false);
           router.refresh();
@@ -124,29 +123,29 @@ export function NutritionChat() {
           type="button"
           onClick={() => setOpen(true)}
           aria-label="Abrir chat de nutrição"
-          className="fixed bottom-24 right-4 z-50 flex size-14 items-center justify-center rounded-full bg-primary shadow-lg transition-transform hover:scale-105"
+          className="fixed bottom-28 right-4 z-50 flex size-14 items-center justify-center rounded-full bg-green-600 shadow-lg transition-transform hover:scale-105 dark:bg-green-700"
         >
-          <span className="absolute inline-flex size-14 animate-ping rounded-full bg-primary opacity-30" />
-          <Salad className="relative size-6 text-primary-foreground" />
+          <span className="absolute inline-flex size-14 animate-ping rounded-full bg-green-600 opacity-30 dark:bg-green-700" />
+          <Salad className="relative size-6 text-white" />
         </button>
       )}
 
       {open && (
-        <div className="fixed bottom-24 right-4 z-50 flex h-128 w-[calc(100vw-32px)] max-w-sm flex-col overflow-hidden rounded-4xl border border-border bg-background shadow-xl">
+        <div className="fixed bottom-28 right-4 z-50 flex h-128 w-[calc(100vw-32px)] max-w-sm flex-col overflow-hidden rounded-4xl border border-border bg-background shadow-xl">
+          {/* Header */}
           <div className="flex shrink-0 items-center justify-between border-b border-border p-4">
             <div className="flex items-center gap-2">
-              <div className="flex items-center justify-center rounded-full border border-primary/8 bg-primary/8 p-2.5">
-                <Sparkles className="size-4 text-primary" />
+              <div className="flex items-center justify-center rounded-full border border-green-500/20 bg-green-500/10 p-2.5">
+                <UtensilsCrossed className="size-4 text-green-600 dark:text-green-400" />
               </div>
 
               <div className="flex flex-col gap-1">
                 <span className="font-heading text-sm font-semibold text-foreground">
                   Nutrição AI
                 </span>
-
                 <div className="flex items-center gap-1">
-                  <div className="size-1.5 rounded-full bg-online" />
-                  <span className="font-heading text-xs text-primary">
+                  <div className="size-1.5 rounded-full bg-green-500" />
+                  <span className="font-heading text-xs text-green-600 dark:text-green-400">
                     Online
                   </span>
                 </div>
@@ -164,11 +163,11 @@ export function NutritionChat() {
             </Button>
           </div>
 
+          {/* Mensagens */}
           <div className="flex-1 overflow-y-auto pb-4">
             {messages.map((message) => {
               const isAssistant = message.role === "assistant";
               const isLastMessage = messages[messages.length - 1]?.id === message.id;
-
               const textParts = message.parts.filter(
                 (part): part is { type: "text"; text: string } => part.type === "text"
               );
@@ -185,8 +184,8 @@ export function NutritionChat() {
                   <div
                     className={
                       isAssistant
-                        ? "rounded-xl bg-secondary p-3"
-                        : "rounded-xl bg-primary p-3"
+                        ? "rounded-xl bg-green-50 p-3 dark:bg-green-950/30"
+                        : "rounded-xl bg-green-600 p-3 dark:bg-green-700"
                     }
                   >
                     {isAssistant ? (
@@ -200,7 +199,7 @@ export function NutritionChat() {
                         </Streamdown>
                       ))
                     ) : (
-                      <p className="whitespace-pre-wrap font-heading text-sm leading-relaxed text-primary-foreground">
+                      <p className="whitespace-pre-wrap font-heading text-sm leading-relaxed text-white">
                         {textParts.map((part) => part.text).join("")}
                       </p>
                     )}
@@ -208,10 +207,10 @@ export function NutritionChat() {
                 </div>
               );
             })}
-
             <div ref={messagesEndRef} />
           </div>
 
+          {/* Sugestões + Input */}
           <div className="flex shrink-0 flex-col gap-3">
             {messages.length === 0 && (
               <div className="flex flex-wrap gap-2 px-4">
@@ -221,7 +220,7 @@ export function NutritionChat() {
                     type="button"
                     disabled={isLoading}
                     onClick={() => void handleSendMessage(suggestion)}
-                    className="whitespace-nowrap rounded-full bg-primary/10 px-3 py-1.5 font-heading text-xs text-foreground transition-opacity disabled:cursor-not-allowed disabled:opacity-50"
+                    className="whitespace-nowrap rounded-full bg-green-500/10 px-3 py-1.5 font-heading text-xs text-green-700 transition-opacity disabled:cursor-not-allowed disabled:opacity-50 dark:text-green-400"
                   >
                     {suggestion}
                   </button>
@@ -275,7 +274,7 @@ export function NutritionChat() {
                   type="submit"
                   disabled={!trimmedMessage || isLoading}
                   size="icon"
-                  className="size-9 shrink-0 rounded-full"
+                  className="size-9 shrink-0 rounded-full bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-600"
                   aria-label="Enviar mensagem"
                 >
                   <ArrowUp className="size-4" />
