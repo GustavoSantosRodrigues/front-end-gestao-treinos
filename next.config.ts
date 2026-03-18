@@ -17,5 +17,6 @@ export default withPWA({
   register: true,
   workboxOptions: {
     skipWaiting: false,
+    clientsClaim: true,
   },
 })(nextConfig);

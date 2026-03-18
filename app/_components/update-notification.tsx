@@ -4,27 +4,56 @@ import { useEffect, useState } from "react";
 
 export function UpdateNotification() {
   const [showUpdate, setShowUpdate] = useState(false);
+  const [waitingWorker, setWaitingWorker] = useState<ServiceWorker | null>(null);
 
   useEffect(() => {
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.ready.then((registration) => {
-        registration.addEventListener("updatefound", () => {
-          const newWorker = registration.installing;
-          newWorker?.addEventListener("statechange", () => {
-            if (
-              newWorker.state === "installed" &&
-              navigator.serviceWorker.controller
-            ) {
-              setShowUpdate(true);
-            }
-          });
+    if (!("serviceWorker" in navigator)) return;
+
+    let isRefreshing = false;
+
+    const onControllerChange = () => {
+      if (isRefreshing) return;
+      isRefreshing = true;
+      window.location.reload();
+    };
+
+    navigator.serviceWorker.addEventListener("controllerchange", onControllerChange);
+
+    navigator.serviceWorker.ready.then(async (registration) => {
+      // Se já existe uma nova versão aguardando ativação
+      if (registration.waiting) {
+        setWaitingWorker(registration.waiting);
+        setShowUpdate(true);
+      }
+
+      // Força checagem por atualização
+      await registration.update();
+
+      registration.addEventListener("updatefound", () => {
+        const newWorker = registration.installing;
+        if (!newWorker) return;
+
+        newWorker.addEventListener("statechange", () => {
+          if (
+            newWorker.state === "installed" &&
+            navigator.serviceWorker.controller
+          ) {
+            setWaitingWorker(registration.waiting ?? newWorker);
+            setShowUpdate(true);
+          }
         });
       });
-    }
+    });
+
+    return () => {
+      navigator.serviceWorker.removeEventListener("controllerchange", onControllerChange);
+    };
   }, []);
 
   const handleUpdate = () => {
-    window.location.reload();
+    if (waitingWorker) {
+      waitingWorker.postMessage({ type: "SKIP_WAITING" });
+    }
   };
 
   if (!showUpdate) return null;
@@ -35,6 +64,7 @@ export function UpdateNotification() {
         <p className="font-heading text-sm font-semibold text-background">
           🚀 Nova versão disponível!
         </p>
+
         <button
           type="button"
           onClick={handleUpdate}
@@ -43,11 +73,20 @@ export function UpdateNotification() {
           Atualizar
         </button>
       </div>
+
       <ul className="flex flex-col gap-0.5">
-        <li className="font-heading text-xs text-background/70">🥗 Plano nutricional com IA</li>
-        <li className="font-heading text-xs text-background/70">⚡ Botão de iniciar treino na home</li>
-        <li className="font-heading text-xs text-background/70">🏠 Resumo de macros na home</li>
-        <li className="font-heading text-xs text-background/70">🧪 Teste de notificação</li>
+        <li className="font-heading text-xs text-background/70">
+          🥗 Plano nutricional com IA
+        </li>
+        <li className="font-heading text-xs text-background/70">
+          ⚡ Botão de iniciar treino na home
+        </li>
+        <li className="font-heading text-xs text-background/70">
+          🏠 Resumo de macros na home
+        </li>
+        <li className="font-heading text-xs text-background/70">
+          🧪 Teste de notificação
+        </li>
       </ul>
     </div>
   );
