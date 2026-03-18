@@ -590,12 +590,37 @@ export type PostAiBodyMessagesItem = {
   id: string;
   role: PostAiBodyMessagesItemRole;
   content?: string | unknown[];
+  /** @maxItems 50 */
   parts: unknown[];
   createdAt?: unknown;
 };
 
 export type PostAiBody = {
+  /** @maxItems 100 */
   messages: PostAiBodyMessagesItem[];
+};
+
+export type PostNutritionAiBodyMessagesItemRole =
+  (typeof PostNutritionAiBodyMessagesItemRole)[keyof typeof PostNutritionAiBodyMessagesItemRole];
+
+export const PostNutritionAiBodyMessagesItemRole = {
+  user: "user",
+  assistant: "assistant",
+  system: "system",
+} as const;
+
+export type PostNutritionAiBodyMessagesItem = {
+  id: string;
+  role: PostNutritionAiBodyMessagesItemRole;
+  content?: string | unknown[];
+  /** @maxItems 50 */
+  parts: unknown[];
+  createdAt?: unknown;
+};
+
+export type PostNutritionAiBody = {
+  /** @maxItems 100 */
+  messages: PostNutritionAiBodyMessagesItem[];
 };
 
 export type Get200 = {
@@ -1327,6 +1352,147 @@ export const postAi = async (
     method: "POST",
     headers: { "Content-Type": "application/json", ...options?.headers },
     body: JSON.stringify(postAiBody),
+  });
+};
+
+/**
+ * @summary Chat with AI sports nutrition assistant
+ */
+export type postNutritionAiResponse200 = {
+  data: void;
+  status: 200;
+};
+
+export type postNutritionAiResponseSuccess = postNutritionAiResponse200 & {
+  headers: Headers;
+};
+export type postNutritionAiResponse = postNutritionAiResponseSuccess;
+
+export const getPostNutritionAiUrl = () => {
+  return `/nutrition/ai`;
+};
+
+export const postNutritionAi = async (
+  postNutritionAiBody: PostNutritionAiBody,
+  options?: RequestInit,
+): Promise<postNutritionAiResponse> => {
+  return customFetch<postNutritionAiResponse>(getPostNutritionAiUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(postNutritionAiBody),
+  });
+};
+
+/**
+ * @summary List nutrition plans
+ */
+export type listNutritionPlansResponse200 = {
+  data: void;
+  status: 200;
+};
+
+export type listNutritionPlansResponseSuccess =
+  listNutritionPlansResponse200 & {
+    headers: Headers;
+  };
+export type listNutritionPlansResponse = listNutritionPlansResponseSuccess;
+
+export const getListNutritionPlansUrl = () => {
+  return `/nutrition/plans`;
+};
+
+export const listNutritionPlans = async (
+  options?: RequestInit,
+): Promise<listNutritionPlansResponse> => {
+  return customFetch<listNutritionPlansResponse>(getListNutritionPlansUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+/**
+ * @summary Get a nutrition plan
+ */
+export type getNutritionPlanResponse200 = {
+  data: void;
+  status: 200;
+};
+
+export type getNutritionPlanResponseSuccess = getNutritionPlanResponse200 & {
+  headers: Headers;
+};
+export type getNutritionPlanResponse = getNutritionPlanResponseSuccess;
+
+export const getGetNutritionPlanUrl = (id: string) => {
+  return `/nutrition/plans/${id}`;
+};
+
+export const getNutritionPlan = async (
+  id: string,
+  options?: RequestInit,
+): Promise<getNutritionPlanResponse> => {
+  return customFetch<getNutritionPlanResponse>(getGetNutritionPlanUrl(id), {
+    ...options,
+    method: "GET",
+  });
+};
+
+/**
+ * @summary Delete a nutrition plan
+ */
+export type deleteNutritionPlanResponse200 = {
+  data: void;
+  status: 200;
+};
+
+export type deleteNutritionPlanResponseSuccess =
+  deleteNutritionPlanResponse200 & {
+    headers: Headers;
+  };
+export type deleteNutritionPlanResponse = deleteNutritionPlanResponseSuccess;
+
+export const getDeleteNutritionPlanUrl = (id: string) => {
+  return `/nutrition/plans/${id}`;
+};
+
+export const deleteNutritionPlan = async (
+  id: string,
+  options?: RequestInit,
+): Promise<deleteNutritionPlanResponse> => {
+  return customFetch<deleteNutritionPlanResponse>(
+    getDeleteNutritionPlanUrl(id),
+    {
+      ...options,
+      method: "DELETE",
+    },
+  );
+};
+
+/**
+ * @summary Get a nutrition day
+ */
+export type getNutritionDayResponse200 = {
+  data: void;
+  status: 200;
+};
+
+export type getNutritionDayResponseSuccess = getNutritionDayResponse200 & {
+  headers: Headers;
+};
+export type getNutritionDayResponse = getNutritionDayResponseSuccess;
+
+export const getGetNutritionDayUrl = (id: string) => {
+  return `/nutrition/days/${id}`;
+};
+
+export const getNutritionDay = async (
+  id: string,
+  options?: RequestInit,
+): Promise<getNutritionDayResponse> => {
+  return customFetch<getNutritionDayResponse>(getGetNutritionDayUrl(id), {
+    ...options,
+    method: "GET",
   });
 };
 
