@@ -76,8 +76,9 @@ export default async function NutritionPlanPage({
               totalCalories={day.totalCalories}
               totalProtein={day.totalProtein}
               totalCarbs={day.totalCarbs}
-              totalFat={day.totalFat} 
+              totalFat={day.totalFat}
               mealsCount={0}
+              isUniqueDay={true}
             />
           </Link>
         ))}

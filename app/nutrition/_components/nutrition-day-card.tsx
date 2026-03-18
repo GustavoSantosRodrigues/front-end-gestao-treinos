@@ -18,6 +18,7 @@ interface NutritionDayCardProps {
     totalCarbs: number
     totalFat: number
     mealsCount: number
+    isUniqueDay: boolean
 }
 
 export function NutritionDayCard({
@@ -26,16 +27,28 @@ export function NutritionDayCard({
     totalProtein,
     totalCarbs,
     totalFat,
+    isUniqueDay,
 }: NutritionDayCardProps) {
     return (
         <div className="relative flex w-full flex-col gap-4 overflow-hidden rounded-xl border border-border bg-card p-5">
             <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1 rounded-full bg-muted px-2.5 py-1.5">
-                    <Calendar className="size-3.5 text-muted-foreground" />
-                    <span className="font-heading text-xs font-semibold uppercase text-muted-foreground">
-                        {weekDay ? WEEKDAY_LABELS[weekDay] : "DIA ÚNICO"}
-                    </span>
-                </div>
+
+                {isUniqueDay && (
+                    <div className="flex items-center gap-1 rounded-full bg-muted px-2.5 py-1.5">
+                        <Calendar className="size-3.5 text-muted-foreground" />
+                        <span className="font-heading text-xs font-semibold uppercase text-muted-foreground">
+                            DIA ÚNICO
+                        </span>
+                    </div>
+                )}
+                {!isUniqueDay && weekDay && (
+                    <div className="flex items-center gap-1 rounded-full bg-muted px-2.5 py-1.5">
+                        <Calendar className="size-3.5 text-muted-foreground" />
+                        <span className="font-heading text-xs font-semibold uppercase text-muted-foreground">
+                            {WEEKDAY_LABELS[weekDay]}
+                        </span>
+                    </div>
+                )}
                 <div className="flex items-center gap-1">
                     <UtensilsCrossed className="size-3.5 text-muted-foreground" />
                     <span className="font-heading text-xs text-muted-foreground">
