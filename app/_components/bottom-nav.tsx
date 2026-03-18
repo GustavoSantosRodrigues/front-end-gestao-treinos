@@ -4,6 +4,7 @@ import {
   Calendar,
   ChartNoAxesColumn,
   UserRound,
+  Salad,
 } from "lucide-react";
 import dayjs from "dayjs";
 import { getHomeData } from "@/app/_lib/api/fetch-generated";
@@ -11,7 +12,7 @@ import { cn } from "@/lib/utils";
 import { ChatOpenButton } from "@/app/_components/chat-open-button";
 
 interface BottomNavProps {
-  activePage?: "home" | "calendar" | "stats" | "profile";
+  activePage?: "home" | "calendar" | "nutrition" | "stats" | "profile";
 }
 
 export async function BottomNav({ activePage = "home" }: BottomNavProps) {
@@ -24,7 +25,7 @@ export async function BottomNav({ activePage = "home" }: BottomNavProps) {
       : null;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-center gap-6 rounded-t-[20px] border border-border bg-background px-6 py-4">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-center gap-3 rounded-t-[20px] border border-border bg-background px-4 py-4">
       <Link href="/" className="p-3">
         <House
           className={cn(
@@ -33,6 +34,7 @@ export async function BottomNav({ activePage = "home" }: BottomNavProps) {
           )}
         />
       </Link>
+
       {calendarHref ? (
         <Link href={calendarHref} className="p-3">
           <Calendar
@@ -56,7 +58,20 @@ export async function BottomNav({ activePage = "home" }: BottomNavProps) {
           />
         </button>
       )}
+
       <ChatOpenButton />
+
+      <Link href="/nutrition" className="p-3">
+        <Salad
+          className={cn(
+            "size-6",
+            activePage === "nutrition"
+              ? "text-foreground"
+              : "text-muted-foreground"
+          )}
+        />
+      </Link>
+
       <Link href="/stats" className="p-3">
         <ChartNoAxesColumn
           className={cn(
@@ -67,6 +82,7 @@ export async function BottomNav({ activePage = "home" }: BottomNavProps) {
           )}
         />
       </Link>
+
       <Link href="/profile" className="p-3">
         <UserRound
           className={cn(
