@@ -7,7 +7,7 @@ import { useQueryStates, parseAsBoolean, parseAsString } from "nuqs";
 import { Sparkles, X, ArrowUp } from "lucide-react";
 import { Streamdown } from "streamdown";
 import "streamdown/styles.css";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -16,15 +16,19 @@ import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-const SUGGESTED_MESSAGES_ONBOARDING = ["Monte meu plano de treino"];
-const SUGGESTED_MESSAGES_APP = ["O que posso melhorar no meu treino?", "Tire uma dúvida"];
+const SUGGESTED_MESSAGES_ONBOARDING = ["Monte meu plano de treino"] as const;
+const SUGGESTED_MESSAGES_APP = ["O que posso melhorar no meu treino?", "Tire uma dúvida"] as const;
 
 const chatFormSchema = z.object({
-  message: z.string().min(1),
+  message: z.string().trim().min(1),
 });
 
-
 type ChatFormValues = z.infer<typeof chatFormSchema>;
+
+function isRateLimitMessage(message: string): boolean {
+  const normalized = message.toLowerCase();
+  return normalized.includes("429") || normalized.includes("rate");
+}
 
 interface ChatProps {
   embedded?: boolean;
@@ -33,10 +37,10 @@ interface ChatProps {
 
 export function Chat({ embedded = false, initialMessage }: ChatProps) {
   const router = useRouter();
-
-
   const redirectRef = useRef(false);
-
+  const initialMessageSentRef = useRef(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const redirectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [chatParams, setChatParams] = useQueryStates({
     chat_open: parseAsBoolean.withDefault(false),
@@ -51,25 +55,25 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
       credentials: "include",
     }),
     onError: (error) => {
-      if (error.message.includes("429") || error.message.includes("rate")) {
+      if (isRateLimitMessage(error.message)) {
         setRateLimitError(true);
       }
     },
     onFinish: ({ message }) => {
-      const hasCreated = message.parts.some((part) => {
-        const str = JSON.stringify(part);
-        return str.includes("workoutPlanCreated");
-      });
+      const hasCreated = message.parts.some((part) =>
+        JSON.stringify(part).includes("workoutPlanCreated")
+      );
 
       if (hasCreated && !redirectRef.current) {
         redirectRef.current = true;
-        setTimeout(() => {
+        redirectTimeoutRef.current = setTimeout(() => {
           if (embedded) {
             router.push("/");
           } else {
-            setChatParams({ chat_open: false });
+            void setChatParams({ chat_open: false });
             router.push("/");
           }
+          redirectRef.current = false;
         }, 2000);
       }
     },
@@ -80,16 +84,17 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
     defaultValues: { message: "" },
   });
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const initialMessageSentRef = useRef(false);
+  const messageValue = useWatch({ control: form.control, name: "message" });
 
+  // Envia mensagem inicial no modo embedded
   useEffect(() => {
     if (embedded && initialMessage && !initialMessageSentRef.current) {
       initialMessageSentRef.current = true;
-      sendMessage({ text: initialMessage });
+      void sendMessage({ text: initialMessage });
     }
   }, [embedded, initialMessage, sendMessage]);
 
+  // Envia mensagem inicial via query param no modo flutuante
   useEffect(() => {
     if (
       !embedded &&
@@ -98,16 +103,10 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
       !initialMessageSentRef.current
     ) {
       initialMessageSentRef.current = true;
-      sendMessage({ text: chatParams.chat_initial_message });
-      setChatParams({ chat_initial_message: null });
+      void sendMessage({ text: chatParams.chat_initial_message });
+      void setChatParams({ chat_initial_message: null });
     }
-  }, [
-    embedded,
-    chatParams.chat_open,
-    chatParams.chat_initial_message,
-    sendMessage,
-    setChatParams,
-  ]);
+  }, [embedded, chatParams.chat_open, chatParams.chat_initial_message, sendMessage, setChatParams]);
 
   useEffect(() => {
     if (!embedded && !chatParams.chat_open) {
@@ -120,48 +119,50 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
   }, [messages]);
 
   useEffect(() => {
-    if (status === "error") {
-      setRateLimitError(true);
-    }
-  }, [status]);
+    return () => {
+      if (redirectTimeoutRef.current) {
+        clearTimeout(redirectTimeoutRef.current);
+      }
+    };
+  }, []);
 
   if (!embedded && !chatParams.chat_open) return null;
 
   const handleClose = () => {
-    setChatParams({ chat_open: false, chat_initial_message: null });
+    void setChatParams({ chat_open: false, chat_initial_message: null });
   };
+
   const onSubmit = async (values: ChatFormValues) => {
+    form.setValue("message", "");
+    setRateLimitError(false);
     try {
       await sendMessage({ text: values.message });
     } catch (error: unknown) {
-      if (error instanceof Error && (error.message.includes("429") || error.message.includes("rate"))) {
+      if (error instanceof Error && isRateLimitMessage(error.message)) {
         setRateLimitError(true);
       }
     }
-    form.reset();
   };
+
   const handleSuggestion = (text: string) => {
-    sendMessage({ text });
+    void sendMessage({ text });
   };
-
-
 
   const isStreaming = status === "streaming";
   const isLoading = status === "submitted" || isStreaming;
-
 
   const chatContent = (
     <div
       className={
         embedded
           ? "flex h-svh flex-col bg-background"
-          : "flex flex-1 flex-col overflow-hidden rounded-[20px] bg-background"
+          : "flex flex-1 flex-col overflow-hidden rounded-4xl bg-background"
       }
     >
       <div className="flex shrink-0 items-center justify-between border-b border-border p-5">
         <div className="flex items-center gap-2">
-          <div className="flex items-center justify-center rounded-full bg-primary/8 border border-primary/8 p-3">
-            <Sparkles className="size-[18px] text-primary" />
+          <div className="flex items-center justify-center rounded-full border border-primary/8 bg-primary/8 p-3">
+            <Sparkles className="size-4.5 text-primary" />
           </div>
           <div className="flex flex-col gap-1.5">
             <span className="font-heading text-base font-semibold text-foreground">
@@ -169,9 +170,7 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
             </span>
             <div className="flex items-center gap-1">
               <div className="size-2 rounded-full bg-online" />
-              <span className="font-heading text-xs text-primary">
-                Online
-              </span>
+              <span className="font-heading text-xs text-primary">Online</span>
             </div>
           </div>
         </div>
@@ -180,59 +179,49 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
             <Link href="/">Acessar FIT.AI</Link>
           </Button>
         ) : (
-          <Button variant="ghost" size="icon" onClick={handleClose}>
+          <Button type="button" variant="ghost" size="icon" onClick={handleClose}>
             <X className="size-6 text-foreground" />
           </Button>
         )}
       </div>
 
       <div className="flex-1 overflow-y-auto pb-5">
-        {messages
-          .map((message) => (
+        {messages.map((message) => {
+          const isAssistant = message.role === "assistant";
+          const isLastMessage = messages[messages.length - 1]?.id === message.id;
+          const textParts = message.parts.filter(
+            (part): part is { type: "text"; text: string } => part.type === "text"
+          );
+
+          return (
             <div
               key={message.id}
               className={
-                message.role === "assistant"
+                isAssistant
                   ? "flex flex-col items-start pl-5 pr-15 pt-5"
                   : "flex flex-col items-end pl-15 pr-5 pt-5"
               }
             >
-              <div
-                className={
-                  message.role === "assistant"
-                    ? "rounded-xl bg-secondary p-3"
-                    : "rounded-xl bg-primary p-3"
-                }
-              >
-                {message.role === "assistant" ? (
-                  message.parts.map((part, index) =>
-                    part.type === "text" ? (
-                      <Streamdown
-                        key={index}
-                        isAnimating={
-                          isStreaming &&
-                          messages[messages.length - 1]?.id === message.id
-                        }
-                        className="font-heading text-sm leading-relaxed text-foreground"
-                      >
-                        {part.text}
-                      </Streamdown>
-                    ) : null
-                  )
+              <div className={isAssistant ? "rounded-xl bg-secondary p-3" : "rounded-xl bg-primary p-3"}>
+                {isAssistant ? (
+                  textParts.map((part, index) => (
+                    <Streamdown
+                      key={`${message.id}-${index}`}
+                      isAnimating={isStreaming && isLastMessage}
+                      className="font-heading text-sm leading-relaxed text-foreground"
+                    >
+                      {part.text}
+                    </Streamdown>
+                  ))
                 ) : (
-                  <p className="font-heading text-sm leading-relaxed text-primary-foreground whitespace-pre-wrap">
-                    {message.parts
-                      .filter((part) => part.type === "text")
-                      .map(
-                        (part) =>
-                          (part as { type: "text"; text: string }).text
-                      )
-                      .join("")}
+                  <p className="whitespace-pre-wrap font-heading text-sm leading-relaxed text-primary-foreground">
+                    {textParts.map((part) => part.text).join("")}
                   </p>
                 )}
               </div>
             </div>
-          ))}
+          );
+        })}
         <div ref={messagesEndRef} />
       </div>
 
@@ -242,8 +231,10 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
             {(embedded ? SUGGESTED_MESSAGES_ONBOARDING : SUGGESTED_MESSAGES_APP).map((suggestion) => (
               <button
                 key={suggestion}
+                type="button"
+                disabled={isLoading}
                 onClick={() => handleSuggestion(suggestion)}
-                className="whitespace-nowrap rounded-full bg-primary/10 px-4 py-2 font-heading text-sm text-foreground"
+                className="whitespace-nowrap rounded-full bg-primary/10 px-4 py-2 font-heading text-sm text-foreground transition-opacity disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {suggestion}
               </button>
@@ -258,10 +249,11 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
             </p>
           </div>
         )}
+
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="flex items-center gap-2 border-t border-border p-5"
+            className="flex items-end gap-2 border-t border-border p-5"
           >
             <FormField
               control={form.control}
@@ -272,7 +264,14 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
                     <Textarea
                       {...field}
                       placeholder="Digite sua mensagem"
-                      className="bg-secondary px-4 py-3 font-heading text-base text-foreground placeholder:text-muted-foreground max-h-32 overflow-y-auto min-h-0"
+                      disabled={isLoading}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && !e.shiftKey) {
+                          e.preventDefault();
+                          void form.handleSubmit(onSubmit)();
+                        }
+                      }}
+                      className="max-h-32 min-h-0 overflow-y-auto bg-secondary px-4 py-3 font-heading text-base text-foreground placeholder:text-muted-foreground"
                     />
                   </FormControl>
                 </FormItem>
@@ -280,9 +279,9 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
             />
             <Button
               type="submit"
-              disabled={!form.watch("message").trim() || isLoading}
+              disabled={!messageValue?.trim() || isLoading}
               size="icon"
-              className="size-[42px] shrink-0 rounded-full"
+              className="size-10 shrink-0 rounded-full"
             >
               <ArrowUp className="size-5" />
             </Button>
@@ -295,12 +294,8 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
   if (embedded) return chatContent;
 
   return (
-    <div className="fixed inset-0 z-[60]">
-      <div
-        className="absolute inset-0 bg-foreground/30"
-        onClick={handleClose}
-      />
-
+    <div className="fixed inset-0 z-60">
+      <div className="absolute inset-0 bg-foreground/30" onClick={handleClose} />
       <div className="absolute inset-x-4 bottom-4 top-40 flex flex-col">
         {chatContent}
       </div>
