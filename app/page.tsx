@@ -12,6 +12,7 @@ import { listNutritionPlans } from "./_lib/api/fetch-generated";
 import { Flame, Beef, Wheat, Droplets } from "lucide-react";
 import type { NutritionPlan, NutritionDay } from "./_lib/api/nutrition-types";
 import { JS_TO_WEEKDAY } from "./_lib/api/nutrition-types";
+import { StartWorkoutButton } from "./workout-plans/[id]/days/[dayId]/_components/start-workout-button";
 
 export default async function Home() {
   const session = await authClient.getSession({
@@ -127,19 +128,26 @@ export default async function Home() {
             </h2>
           </div>
 
-          <Link
-            href={`/workout-plans/${todayWorkoutDay.workoutPlanId}/days/${todayWorkoutDay.id}`}
-          >
-            <WorkoutDayCard
-              name={todayWorkoutDay.name}
-              weekDay={todayWorkoutDay.weekDay}
-              estimatedDurationInSeconds={
-                todayWorkoutDay.estimatedDurationInSeconds
-              }
-              exercisesCount={todayWorkoutDay.exercisesCount}
-              coverImageUrl={todayWorkoutDay.coverImageUrl}
-            />
-          </Link>
+          <div className="relative">
+            <Link href={`/workout-plans/${todayWorkoutDay.workoutPlanId}/days/${todayWorkoutDay.id}`}>
+              <WorkoutDayCard
+                name={todayWorkoutDay.name}
+                weekDay={todayWorkoutDay.weekDay}
+                estimatedDurationInSeconds={todayWorkoutDay.estimatedDurationInSeconds}
+                exercisesCount={todayWorkoutDay.exercisesCount}
+                coverImageUrl={todayWorkoutDay.coverImageUrl}
+              />
+            </Link>
+
+            <div className="absolute bottom-5 right-5">
+              <StartWorkoutButton
+                workoutPlanId={todayWorkoutDay.workoutPlanId}
+                workoutDayId={todayWorkoutDay.id}
+                sessionStatus={todayWorkoutDay.sessionStatus}
+                sessionId={todayWorkoutDay.sessionId}
+              />
+            </div>
+          </div>
         </div>
       )}
 

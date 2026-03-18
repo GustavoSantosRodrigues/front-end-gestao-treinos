@@ -19,6 +19,15 @@ export const GetHomeData200TodayWorkoutDayWeekDay = {
   SUNDAY: "SUNDAY",
 } as const;
 
+export type GetHomeData200TodayWorkoutDaySessionStatus =
+  (typeof GetHomeData200TodayWorkoutDaySessionStatus)[keyof typeof GetHomeData200TodayWorkoutDaySessionStatus];
+
+export const GetHomeData200TodayWorkoutDaySessionStatus = {
+  not_started: "not_started",
+  in_progress: "in_progress",
+  completed: "completed",
+} as const;
+
 export type GetHomeData200TodayWorkoutDay = {
   /** @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$ */
   workoutPlanId: string;
@@ -30,6 +39,9 @@ export type GetHomeData200TodayWorkoutDay = {
   estimatedDurationInSeconds: number;
   coverImageUrl?: string;
   exercisesCount: number;
+  sessionStatus: GetHomeData200TodayWorkoutDaySessionStatus;
+  /** @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$ */
+  sessionId?: string;
 };
 
 export type GetHomeData200ConsistencyByDay = {
@@ -1465,6 +1477,37 @@ export const deleteNutritionPlan = async (
     {
       ...options,
       method: "DELETE",
+    },
+  );
+};
+
+/**
+ * @summary Update a nutrition plan
+ */
+export type updateNutritionPlanResponse200 = {
+  data: void;
+  status: 200;
+};
+
+export type updateNutritionPlanResponseSuccess =
+  updateNutritionPlanResponse200 & {
+    headers: Headers;
+  };
+export type updateNutritionPlanResponse = updateNutritionPlanResponseSuccess;
+
+export const getUpdateNutritionPlanUrl = (id: string) => {
+  return `/nutrition/plans/${id}`;
+};
+
+export const updateNutritionPlan = async (
+  id: string,
+  options?: RequestInit,
+): Promise<updateNutritionPlanResponse> => {
+  return customFetch<updateNutritionPlanResponse>(
+    getUpdateNutritionPlanUrl(id),
+    {
+      ...options,
+      method: "PATCH",
     },
   );
 };
