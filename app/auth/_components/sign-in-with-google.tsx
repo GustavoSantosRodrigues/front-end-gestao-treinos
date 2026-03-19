@@ -8,7 +8,7 @@ export const SignInWithGoogle = () => {
   const handleGoogleLogin = async () => {
     const { error } = await authClient.signIn.social({
       provider: "google",
-      callbackURL: `${process.env.NEXT_PUBLIC_APP_URL}/`,
+      callbackURL: `${process.env.NEXT_PUBLIC_BASE_URL ?? "https://app.gustavodevsr.xyz"}/`,
     });
 
     if (error) {
@@ -19,7 +19,7 @@ export const SignInWithGoogle = () => {
   return (
     <Button
       onClick={handleGoogleLogin}
-      className="h-[38px] rounded-full bg-white px-6 text-black hover:bg-white/90"
+      className="h-9.5 rounded-full bg-white px-6 text-black hover:bg-white/90"
     >
       <Image
         src="/google-icon.svg"
