@@ -12,7 +12,8 @@ import { listNutritionPlans } from "./_lib/api/fetch-generated";
 import { Flame, Beef, Wheat, Droplets } from "lucide-react";
 import type { NutritionPlan, NutritionDay } from "./_lib/api/nutrition-types";
 import { JS_TO_WEEKDAY } from "./_lib/api/nutrition-types";
-import { StartWorkoutButton } from "./_components/start-workout-button";
+import { StartWorkoutButton } from "./workout-plans/[id]/days/[dayId]/_components/start-workout-button";
+
 
 export default async function Home() {
   const session = await authClient.getSession({
@@ -217,3 +218,4 @@ export default async function Home() {
     </div>
   );
 }
+

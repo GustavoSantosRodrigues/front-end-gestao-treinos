@@ -30,7 +30,6 @@ export const customFetch = async <T>(
     ...options,
     headers: requestHeaders,
     credentials: "include",
-    cache: "no-store",
   };
 
   const response = await fetch(requestUrl, requestInit);

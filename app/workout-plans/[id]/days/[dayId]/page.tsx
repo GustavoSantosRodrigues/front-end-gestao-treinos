@@ -10,7 +10,7 @@ import { BackButton } from "./_components/back-button";
 import { ExerciseCard } from "./_components/exercise-card";
 import { CompleteWorkoutButton } from "./_components/complete-workout-button";
 import { WorkoutTimer } from "./_components/workoutTimer";
-import { StartWorkoutButton } from "../../../../_components/start-workout-button";
+import { StartWorkoutButton } from "./_components/start-workout-button";
 
 
 
