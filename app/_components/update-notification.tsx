@@ -57,37 +57,81 @@ export function UpdateNotification() {
   if (!showUpdate) return null;
 
   return (
-    <div className="fixed top-4 left-4 right-4 z-50 mx-auto flex max-w-md flex-col gap-3 rounded-3xl bg-foreground px-5 py-4 shadow-2xl">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex flex-col gap-1">
-          <p className="font-heading text-base font-semibold text-background">
-            🚀 Nova versão disponível!
-          </p>
-          <p className="font-heading text-sm text-background/70">
-            Atualize para acessar as últimas melhorias do app.
-          </p>
-        </div>
+    <div className="fixed inset-0 z-50 flex flex-col bg-foreground">
+      {/* Header */}
+      <div className="flex flex-col gap-2 px-6 pt-16 pb-8">
+        <span className="font-heading text-4xl">🚀</span>
+        <h1 className="font-heading text-2xl font-bold text-background">
+          Nova versão disponível!
+        </h1>
+        <p className="font-heading text-sm text-background/70">
+          Atualize para acessar as últimas melhorias do app.
+        </p>
+      </div>
 
+      {/* Changelog */}
+      <div className="flex flex-1 flex-col gap-3 px-6">
+        <p className="font-heading text-xs font-semibold uppercase tracking-wider text-background/40">
+          O que há de novo
+        </p>
+        <ul className="flex flex-col gap-4">
+          <li className="flex items-start gap-3">
+            <span className="text-xl">🥗</span>
+            <div className="flex flex-col gap-0.5">
+              <p className="font-heading text-sm font-semibold text-background">
+                Plano nutricional com IA
+              </p>
+              <p className="font-heading text-xs text-background/60">
+                Monte seu plano alimentar personalizado conversando com a IA, com refeições, macros e substituições
+              </p>
+            </div>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="text-xl">⚡</span>
+            <div className="flex flex-col gap-0.5">
+              <p className="font-heading text-sm font-semibold text-background">
+                Iniciar treino pela home
+              </p>
+              <p className="font-heading text-xs text-background/60">
+                Inicie, continue ou veja o status do treino direto na tela inicial
+              </p>
+            </div>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="text-xl">🏠</span>
+            <div className="flex flex-col gap-0.5">
+              <p className="font-heading text-sm font-semibold text-background">
+                Macros na home
+              </p>
+              <p className="font-heading text-xs text-background/60">
+                Acompanhe calorias, proteína, carboidratos e gordura do dia sem precisar entrar no plano
+              </p>
+            </div>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="text-xl">💪</span>
+            <div className="flex flex-col gap-0.5">
+              <p className="font-heading text-sm font-semibold text-background">
+                Atualização de treino aprimorada
+              </p>
+              <p className="font-heading text-xs text-background/60">
+                Troque exercícios, acrescente novos, espelhe treinos entre dias e a tela atualiza automaticamente
+              </p>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      {/* Botão */}
+      <div className="px-6 pb-12 pt-6">
         <button
           type="button"
           onClick={handleUpdate}
-          className="shrink-0 rounded-full bg-primary px-4 py-2 font-heading text-sm font-semibold text-primary-foreground"
+          className="w-full rounded-full bg-primary py-4 font-heading text-base font-semibold text-primary-foreground"
         >
-          Atualizar
+          Atualizar agora
         </button>
       </div>
-
-      <ul className="flex flex-col gap-1">
-        <li className="font-heading text-xs text-background/70">
-          🥗 Plano nutricional com IA — agora você consegue montar seu plano alimentar personalizado conversando com a IA, com refeições, macros e substituições
-        </li>
-        <li className="font-heading text-xs text-background/70">
-          ⚡ Iniciar treino pela home — ficou mais fácil! Agora você inicia, continua ou vê o status do treino direto na tela inicial
-        </li>
-        <li className="font-heading text-xs text-background/70">
-          🏠 Macros na home — acompanhe suas calorias, proteína, carboidratos e gordura do dia sem precisar entrar no plano
-        </li>
-      </ul>
     </div>
   );
 }
