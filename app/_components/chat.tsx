@@ -63,14 +63,19 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
       const hasCreated = message.parts.some((part) =>
         JSON.stringify(part).includes("workoutPlanCreated")
       );
+      const hasUpdated = message.parts.some((part) =>
+        JSON.stringify(part).includes("workoutPlanUpdated")
+      );
 
-      if (hasCreated && !redirectRef.current) {
+      if ((hasCreated || hasUpdated) && !redirectRef.current) {
         redirectRef.current = true;
         redirectTimeoutRef.current = setTimeout(() => {
           if (embedded) {
+            router.refresh(); 
             router.push("/");
           } else {
             void setChatParams({ chat_open: false });
+            router.refresh();
             router.push("/");
           }
           redirectRef.current = false;
@@ -79,7 +84,7 @@ export function Chat({ embedded = false, initialMessage }: ChatProps) {
     },
   });
 
-  const form = useForm<ChatFormValues>({
+  const form = useForm<ChatFormValues>({  
     resolver: zodResolver(chatFormSchema),
     defaultValues: { message: "" },
   });
