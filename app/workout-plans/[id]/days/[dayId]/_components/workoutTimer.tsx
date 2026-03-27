@@ -1,46 +1,139 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Play, Pause, Flame } from "lucide-react";
+import { useParams } from "next/navigation";
+import { Play, Pause, Flame, RotateCcw } from "lucide-react";
 
-const STORAGE_KEY = "workout_timer_start";
-
-function getInitialSeconds(): number {
-  if (typeof window === "undefined") return 0;
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored) {
-    return Math.floor((Date.now() - parseInt(stored)) / 1000);
-  }
-  localStorage.setItem(STORAGE_KEY, Date.now().toString());
-  return 0;
-}
+type TimerData = {
+  start: number;
+  pausedAt: number | null;
+  totalPaused: number;
+};
 
 export function WorkoutTimer() {
-  const [seconds, setSeconds] = useState<number>(getInitialSeconds);
+  const params = useParams();
+
+  const workoutId = params?.id as string || "global";
+  const dayId = params?.dayId as string || "day";
+
+  const STORAGE_KEY = `workout_timer_${workoutId}_${dayId}`;
+
+  const getOrCreateTimer = (): TimerData => {
+    if (typeof window === "undefined") {
+      return { start: Date.now(), pausedAt: null, totalPaused: 0 };
+    }
+
+    const stored = localStorage.getItem(STORAGE_KEY);
+
+    if (stored) {
+      try {
+        return JSON.parse(stored);
+      } catch {
+        // fallback seguro
+      }
+    }
+
+    const initial: TimerData = {
+      start: Date.now(),
+      pausedAt: null,
+      totalPaused: 0,
+    };
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(initial));
+    return initial;
+  };
+
+  const getElapsedSeconds = (data: TimerData) => {
+    const now = Date.now();
+
+    if (data.pausedAt) {
+      return Math.floor(
+        (data.pausedAt - data.start - data.totalPaused) / 1000
+      );
+    }
+
+    return Math.floor(
+      (now - data.start - data.totalPaused) / 1000
+    );
+  };
+
+  const [seconds, setSeconds] = useState<number>(() => {
+    const data = getOrCreateTimer();
+    return getElapsedSeconds(data);
+  });
+
   const [running, setRunning] = useState(true);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
+  // ⏱ Timer preciso
   useEffect(() => {
-    if (running) {
-      intervalRef.current = setInterval(() => {
-        setSeconds((prev) => prev + 1);
-      }, 1000);
-    } else {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    }
+    if (!running) return;
+
+    intervalRef.current = setInterval(() => {
+      const data = getOrCreateTimer();
+      setSeconds(getElapsedSeconds(data));
+    }, 1000);
+
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, [running]);
 
+  // 🎯 Evento externo (não apaga mais o timer!)
   useEffect(() => {
     const handler = () => {
       setRunning(false);
-      localStorage.removeItem(STORAGE_KEY);
+
+      const data = getOrCreateTimer();
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        ...data,
+        pausedAt: Date.now(),
+      }));
     };
+
     window.addEventListener("workout:completed", handler);
     return () => window.removeEventListener("workout:completed", handler);
   }, []);
+
+  const handlePause = () => {
+    const data = getOrCreateTimer();
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      ...data,
+      pausedAt: Date.now(),
+    }));
+
+    setRunning(false);
+  };
+
+  const handleResume = () => {
+    const data = getOrCreateTimer();
+
+    if (!data.pausedAt) return;
+
+    const pauseDuration = Date.now() - data.pausedAt;
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      ...data,
+      pausedAt: null,
+      totalPaused: data.totalPaused + pauseDuration,
+    }));
+
+    setRunning(true);
+  };
+
+  const handleReset = () => {
+    const fresh: TimerData = {
+      start: Date.now(),
+      pausedAt: null,
+      totalPaused: 0,
+    };
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(fresh));
+    setSeconds(0);
+    setRunning(true);
+  };
 
   const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds % 3600) / 60);
@@ -55,42 +148,53 @@ export function WorkoutTimer() {
         <div className="flex flex-col gap-0.5">
           <div className="flex items-center gap-1.5">
             <Flame className="size-3.5 text-primary" />
-            <span className="font-heading text-xs font-semibold uppercase tracking-widest text-background/50">
+            <span className="text-xs font-semibold uppercase tracking-widest text-background/50">
               Em treino
             </span>
           </div>
+
           <div className="flex items-end gap-1 tabular-nums">
-            <span className="font-heading text-4xl font-black text-background">
+            <span className="text-4xl font-black text-background">
               {String(h).padStart(2, "0")}
             </span>
-            <span className="mb-1 font-heading text-xl font-bold text-background/40">:</span>
-            <span className="font-heading text-4xl font-black text-background">
+            <span className="mb-1 text-xl text-background/40">:</span>
+            <span className="text-4xl font-black text-background">
               {String(m).padStart(2, "0")}
             </span>
-            <span className="mb-1 font-heading text-xl font-bold text-background/40">:</span>
-            <span className={`font-heading text-4xl font-black ${running ? "text-background" : "text-primary"}`}>
+            <span className="mb-1 text-xl text-background/40">:</span>
+            <span className={`text-4xl font-black ${running ? "text-background" : "text-primary"}`}>
               {String(s).padStart(2, "0")}
             </span>
           </div>
         </div>
 
-        <button
-          onClick={() => setRunning((r) => !r)}
-          className={`flex size-12 items-center justify-center rounded-full transition-all active:scale-95 ${
-            running
-              ? "bg-background/10 hover:bg-background/20"
-              : "bg-primary hover:bg-primary/90"
-          }`}
-        >
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleReset}
+            className="flex size-10 items-center justify-center rounded-full bg-background/10 hover:bg-background/20"
+          >
+            <RotateCcw className="size-4 text-background/60" />
+          </button>
+
           {running ? (
-            <Pause className="size-5 text-background" />
+            <button
+              onClick={handlePause}
+              className="flex size-12 items-center justify-center rounded-full bg-background/10 hover:bg-background/20"
+            >
+              <Pause className="size-5 text-background" />
+            </button>
           ) : (
-            <Play className="size-5 text-primary-foreground" />
+            <button
+              onClick={handleResume}
+              className="flex size-12 items-center justify-center rounded-full bg-primary hover:bg-primary/90"
+            >
+              <Play className="size-5 text-primary-foreground" />
+            </button>
           )}
-        </button>
+        </div>
       </div>
 
-      <div className="relative mt-3 h-0.5 w-full overflow-hidden rounded-full bg-background/10">
+      <div className="mt-3 h-0.5 w-full rounded-full bg-background/10">
         <div
           className="h-full rounded-full bg-primary transition-all duration-1000"
           style={{ width: `${((seconds % 60) / 60) * 100}%` }}
