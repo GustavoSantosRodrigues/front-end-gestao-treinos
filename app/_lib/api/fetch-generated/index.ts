@@ -589,6 +589,17 @@ export type GetExerciseLogs500 = {
   code: string;
 };
 
+export type PatchWorkoutPlansWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderBodyExercisesItem =
+  {
+    id: string;
+    order: number;
+  };
+
+export type PatchWorkoutPlansWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderBody =
+  {
+    exercises: PatchWorkoutPlansWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderBodyExercisesItem[];
+  };
+
 export type PostAiBodyMessagesItemRole =
   (typeof PostAiBodyMessagesItemRole)[keyof typeof PostAiBodyMessagesItemRole];
 
@@ -1337,6 +1348,50 @@ export const getExerciseLogs = async (
     },
   );
 };
+
+/**
+ * @summary Reorder exercises
+ */
+export type patchWorkoutPlansWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderResponse200 =
+  {
+    data: void;
+    status: 200;
+  };
+
+export type patchWorkoutPlansWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderResponseSuccess =
+  patchWorkoutPlansWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderResponse200 & {
+    headers: Headers;
+  };
+export type patchWorkoutPlansWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderResponse =
+  patchWorkoutPlansWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderResponseSuccess;
+
+export const getPatchWorkoutPlansWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderUrl =
+  (workoutPlanId: string, workoutDayId: string) => {
+    return `/workout-plans/workout-plans/${workoutPlanId}/days/${workoutDayId}/exercises/reorder`;
+  };
+
+export const patchWorkoutPlansWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorder =
+  async (
+    workoutPlanId: string,
+    workoutDayId: string,
+    patchWorkoutPlansWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderBody: PatchWorkoutPlansWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderBody,
+    options?: RequestInit,
+  ): Promise<patchWorkoutPlansWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderResponse> => {
+    return customFetch<patchWorkoutPlansWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderResponse>(
+      getPatchWorkoutPlansWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderUrl(
+        workoutPlanId,
+        workoutDayId,
+      ),
+      {
+        ...options,
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", ...options?.headers },
+        body: JSON.stringify(
+          patchWorkoutPlansWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderBody,
+        ),
+      },
+    );
+  };
 
 /**
  * @summary Chat with AI personal trainer

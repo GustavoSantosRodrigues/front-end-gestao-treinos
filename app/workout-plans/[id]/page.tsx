@@ -2,7 +2,6 @@ import { redirect } from "next/navigation";
 import { authClient } from "@/app/_lib/auth-client";
 import { headers } from "next/headers";
 import { getWorkoutPlan, getHomeData, getUserTrainData } from "@/app/_lib/api/fetch-generated";
-import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
 import { Goal } from "lucide-react";

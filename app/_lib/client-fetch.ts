@@ -4,6 +4,7 @@ const getBody = <T>(c: Response | Request): Promise<T> => {
 
 const getUrl = (contextUrl: string): string => {
   const newUrl = new URL(`${process.env.NEXT_PUBLIC_API_URL}${contextUrl}`);
+  console.log("API URL:", process.env.NEXT_PUBLIC_API_URL);
   return newUrl.toString();
 };
 
