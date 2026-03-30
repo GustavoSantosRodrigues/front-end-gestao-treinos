@@ -425,6 +425,7 @@ export type GetWorkoutDay200ExercisesItem = {
   restTimeInSeconds: number;
   weightSuggestion?: string;
   notes?: string;
+  gifUrl?: string;
   logs: GetWorkoutDay200ExercisesItemLogsItem[];
 };
 
@@ -644,6 +645,39 @@ export type PostNutritionAiBodyMessagesItem = {
 export type PostNutritionAiBody = {
   /** @maxItems 100 */
   messages: PostNutritionAiBodyMessagesItem[];
+};
+
+export type GetExercisesParams = {
+  muscles?: string;
+  equipment?: string;
+  difficulty?: string;
+  tags?: string;
+};
+
+export type GetExercises200Item = {
+  id: string;
+  name: string;
+  muscles: string[];
+  equipment: string;
+  difficulty: string;
+  gifUrl: string;
+  tags: string[];
+  createdAt: string;
+};
+
+export type GetExercisesId200 = {
+  id: string;
+  name: string;
+  muscles: string[];
+  equipment: string;
+  difficulty: string;
+  gifUrl: string;
+  tags: string[];
+  createdAt: string;
+};
+
+export type GetExercisesId404 = {
+  error: string;
 };
 
 export type Get200 = {
@@ -1589,6 +1623,83 @@ export const getNutritionDay = async (
   options?: RequestInit,
 ): Promise<getNutritionDayResponse> => {
   return customFetch<getNutritionDayResponse>(getGetNutritionDayUrl(id), {
+    ...options,
+    method: "GET",
+  });
+};
+
+/**
+ * @summary List exercises
+ */
+export type getExercisesResponse200 = {
+  data: GetExercises200Item[];
+  status: 200;
+};
+
+export type getExercisesResponseSuccess = getExercisesResponse200 & {
+  headers: Headers;
+};
+export type getExercisesResponse = getExercisesResponseSuccess;
+
+export const getGetExercisesUrl = (params?: GetExercisesParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/exercises?${stringifiedParams}`
+    : `/exercises`;
+};
+
+export const getExercises = async (
+  params?: GetExercisesParams,
+  options?: RequestInit,
+): Promise<getExercisesResponse> => {
+  return customFetch<getExercisesResponse>(getGetExercisesUrl(params), {
+    ...options,
+    method: "GET",
+  });
+};
+
+/**
+ * @summary Get exercise by id
+ */
+export type getExercisesIdResponse200 = {
+  data: GetExercisesId200;
+  status: 200;
+};
+
+export type getExercisesIdResponse404 = {
+  data: GetExercisesId404;
+  status: 404;
+};
+
+export type getExercisesIdResponseSuccess = getExercisesIdResponse200 & {
+  headers: Headers;
+};
+export type getExercisesIdResponseError = getExercisesIdResponse404 & {
+  headers: Headers;
+};
+
+export type getExercisesIdResponse =
+  | getExercisesIdResponseSuccess
+  | getExercisesIdResponseError;
+
+export const getGetExercisesIdUrl = (id: string) => {
+  return `/exercises/${id}`;
+};
+
+export const getExercisesId = async (
+  id: string,
+  options?: RequestInit,
+): Promise<getExercisesIdResponse> => {
+  return customFetch<getExercisesIdResponse>(getGetExercisesIdUrl(id), {
     ...options,
     method: "GET",
   });

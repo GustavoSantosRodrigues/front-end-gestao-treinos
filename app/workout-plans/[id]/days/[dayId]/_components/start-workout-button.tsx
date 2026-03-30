@@ -22,7 +22,8 @@ export function StartWorkoutButton({
 
   const href = `/workout-plans/${workoutPlanId}/days/${workoutDayId}`;
 
-  const handleStart = async () => {
+  const handleStart = async (e: React.MouseEvent) => {
+    e.stopPropagation();  
     if (sessionStatus === "completed") {
       router.push(href);
       return;
@@ -50,7 +51,7 @@ export function StartWorkoutButton({
   if (sessionStatus === "completed") {
     return (
       <button
-        onClick={handleStart}
+        onClick={(e) => handleStart(e)}
         className="flex items-center gap-1.5 rounded-full bg-primary/20 px-4 py-2 font-heading text-sm font-semibold text-primary"
       >
         <CheckCircle className="size-4" />
@@ -62,7 +63,7 @@ export function StartWorkoutButton({
   if (sessionStatus === "in_progress") {
     return (
       <button
-        onClick={handleStart}
+        onClick={(e) => handleStart(e)}
         className="flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 font-heading text-sm font-semibold text-primary-foreground"
       >
         <Play className="size-4" />
@@ -73,7 +74,7 @@ export function StartWorkoutButton({
 
   return (
     <button
-      onClick={handleStart}
+      onClick={(e) => handleStart(e)}
       disabled={loading}
       className="flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 font-heading text-sm font-semibold text-primary-foreground disabled:opacity-50"
     >
