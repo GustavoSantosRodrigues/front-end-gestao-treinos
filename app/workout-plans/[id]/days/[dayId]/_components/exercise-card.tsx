@@ -6,6 +6,7 @@ import { useQueryStates, parseAsBoolean, parseAsString } from "nuqs";
 import { Button } from "@/components/ui/button";
 import { clientFetch } from "@/app/_lib/client-fetch";
 import type { GetWorkoutDay200ExercisesItem } from "@/app/_lib/api/fetch-generated";
+import Image from "next/image";
 
 interface ExerciseCardProps {
   exercise: GetWorkoutDay200ExercisesItem;
@@ -15,6 +16,9 @@ interface ExerciseCardProps {
 }
 
 export function ExerciseCard({ exercise, workoutPlanId, workoutDayId, sessionId }: ExerciseCardProps) {
+
+  const [showGif, setShowGif] = useState(false);
+
   const [, setChatParams] = useQueryStates({
     chat_open: parseAsBoolean.withDefault(false),
     chat_initial_message: parseAsString,
@@ -95,102 +99,186 @@ export function ExerciseCard({ exercise, workoutPlanId, workoutDayId, sessionId 
   };
 
   return (
-    <div className="flex flex-col gap-4 rounded-xl border border-border p-5">
-      <div className="flex items-center justify-between">
-        <span className="font-heading text-base font-semibold text-foreground">
-          {exercise.name}
-        </span>
+  <div className="flex flex-col gap-4 rounded-xl border border-border p-5">
+    {/* HEADER */}
+    <div className="flex items-center justify-between">
+      <span className="font-heading text-base font-semibold text-foreground">
+        {exercise.name}
+      </span>
+
+      <div className="flex items-center gap-1">
+        {exercise.gifUrl && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setShowGif((prev) => !prev)}
+          >
+            🎥
+          </Button>
+        )}
+
         <Button variant="ghost" size="icon" onClick={handleHelp}>
           <CircleHelp className="size-5 text-muted-foreground" />
         </Button>
       </div>
+    </div>
 
-      <div className="flex items-center gap-1.5">
-        <span className="rounded-full bg-muted px-2.5 py-1 font-heading text-xs font-semibold uppercase text-muted-foreground">
-          {exercise.sets} séries
-        </span>
-        <span className="rounded-full bg-muted px-2.5 py-1 font-heading text-xs font-semibold uppercase text-muted-foreground">
-          {exercise.reps} reps
-        </span>
-        <span className="flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 font-heading text-xs font-semibold uppercase text-muted-foreground">
-          <Zap className="size-3.5" />
-          {exercise.restTimeInSeconds}s
-        </span>
+    {/* GIF */}
+    {showGif && exercise.gifUrl && (
+      <div className="mx-auto w-32 overflow-hidden rounded-lg">
+        <Image
+          src={exercise.gifUrl}
+          alt={exercise.name}
+          width={128}
+          height={128}
+          unoptimized
+          className="w-full rounded-lg"
+        />
       </div>
+    )}
 
-      {exercise.weightSuggestion && (
-        <p className="font-heading text-xs text-muted-foreground">
-          💡 {exercise.weightSuggestion}
-        </p>
-      )}
+    {/* INFO BADGES */}
+    <div className="flex items-center gap-1.5">
+      <span className="rounded-full bg-muted px-2.5 py-1 font-heading text-xs font-semibold uppercase text-muted-foreground">
+        {exercise.sets} séries
+      </span>
 
-      {exercise.notes && (
-        <p className="font-heading text-xs text-muted-foreground">
-          📝 {exercise.notes}
-        </p>
-      )}
+      <span className="rounded-full bg-muted px-2.5 py-1 font-heading text-xs font-semibold uppercase text-muted-foreground">
+        {exercise.reps} reps
+      </span>
 
-      {sessionId && (
-        <div className="flex flex-col gap-2">
-          <div className="grid grid-cols-[40px_1fr_1fr_40px] gap-2 px-1">
-            <span className="font-heading text-xs text-muted-foreground">Série</span>
-            <span className="font-heading text-xs text-muted-foreground">Peso (kg)</span>
-            <span className="font-heading text-xs text-muted-foreground">Reps</span>
-            <span />
-          </div>
-          {sets.map((set, index) => (
-            <div key={index} className={`grid grid-cols-[40px_1fr_1fr_40px] items-center gap-2 rounded-lg p-1 ${set.completed ? "bg-primary/5" : ""}`}>
-              <span className="font-heading text-sm font-semibold text-foreground">{set.setNumber}</span>
-              <input
-                type="number"
-                placeholder="0"
-                value={set.weightInKg}
-                disabled={set.completed}
-                onChange={(e) => setSets((prev) => prev.map((s, i) => i === index ? { ...s, weightInKg: e.target.value } : s))}
-                className="h-9 w-full rounded-lg border border-border bg-background px-3 font-heading text-sm disabled:opacity-50"
-              />
-              <input
-                type="number"
-                value={set.repsCompleted}
-                disabled={set.completed}
-                onChange={(e) => setSets((prev) => prev.map((s, i) => i === index ? { ...s, repsCompleted: e.target.value } : s))}
-                className="h-9 w-full rounded-lg border border-border bg-background px-3 font-heading text-sm disabled:opacity-50"
-              />
-              <button
-                onClick={() => handleCompleteSet(index)}
-                disabled={set.completed || set.saving}
-                className={`flex size-9 items-center justify-center rounded-full border-2 transition-all duration-300 ${set.completed
+      <span className="flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 font-heading text-xs font-semibold uppercase text-muted-foreground">
+        <Zap className="size-3.5" />
+        {exercise.restTimeInSeconds}s
+      </span>
+    </div>
+
+    {/* SUGESTÕES */}
+    {(exercise.weightSuggestion || exercise.notes) && (
+      <div className="flex flex-col gap-1">
+        {exercise.weightSuggestion && (
+          <p className="font-heading text-xs text-muted-foreground">
+            💡 {exercise.weightSuggestion}
+          </p>
+        )}
+
+        {exercise.notes && (
+          <p className="font-heading text-xs text-muted-foreground">
+            📝 {exercise.notes}
+          </p>
+        )}
+      </div>
+    )}
+
+    {/* SESSION MODE */}
+    {sessionId && (
+      <>
+        {/* HEADER TABELA */}
+        <div className="grid grid-cols-[40px_1fr_1fr_40px] gap-2 px-1">
+          <span className="font-heading text-xs text-muted-foreground">
+            Série
+          </span>
+          <span className="font-heading text-xs text-muted-foreground">
+            Peso (kg)
+          </span>
+          <span className="font-heading text-xs text-muted-foreground">
+            Reps
+          </span>
+          <span />
+        </div>
+
+        {/* SETS */}
+        {sets.map((set, index) => (
+          <div
+            key={index}
+            className={`grid grid-cols-[40px_1fr_1fr_40px] items-center gap-2 rounded-lg p-1 ${
+              set.completed ? "bg-primary/5" : ""
+            }`}
+          >
+            <span className="font-heading text-sm font-semibold text-foreground">
+              {set.setNumber}
+            </span>
+
+            <input
+              type="number"
+              placeholder="0"
+              value={set.weightInKg}
+              disabled={set.completed}
+              onChange={(e) =>
+                setSets((prev) =>
+                  prev.map((s, i) =>
+                    i === index ? { ...s, weightInKg: e.target.value } : s
+                  )
+                )
+              }
+              className="h-9 w-full rounded-lg border border-border bg-background px-3 font-heading text-sm disabled:opacity-50"
+            />
+
+            <input
+              type="number"
+              value={set.repsCompleted}
+              disabled={set.completed}
+              onChange={(e) =>
+                setSets((prev) =>
+                  prev.map((s, i) =>
+                    i === index
+                      ? { ...s, repsCompleted: e.target.value }
+                      : s
+                  )
+                )
+              }
+              className="h-9 w-full rounded-lg border border-border bg-background px-3 font-heading text-sm disabled:opacity-50"
+            />
+
+            <button
+              onClick={() => handleCompleteSet(index)}
+              disabled={set.completed || set.saving}
+              className={`flex size-9 items-center justify-center rounded-full border-2 transition-all duration-300 ${
+                set.completed
                   ? "border-primary bg-primary text-primary-foreground scale-110"
                   : set.saving
-                    ? "border-primary/50 bg-primary/10"
-                    : "border-border hover:border-primary/50"
-                  }`}
-              >
-                {set.saving ? (
-                  <div className="size-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                ) : set.completed ? (
-                  <Check className="size-4" />
-                ) : (
-                  <span className="font-heading text-xs font-semibold text-muted-foreground">
-                    {set.setNumber}
-                  </span>
-                )}
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
+                  ? "border-primary/50 bg-primary/10"
+                  : "border-border hover:border-primary/50"
+              }`}
+            >
+              {set.saving ? (
+                <div className="size-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+              ) : set.completed ? (
+                <Check className="size-4" />
+              ) : (
+                <span className="font-heading text-xs font-semibold text-muted-foreground">
+                  {set.setNumber}
+                </span>
+              )}
+            </button>
+          </div>
+        ))}
 
-      {sessionId && timeLeft !== null && (
-        <div className="flex items-center gap-2">
-          <span className={`font-heading text-sm font-semibold ${timeLeft === 0 ? "text-primary" : "text-foreground"}`}>
-            {timeLeft === 0 ? "Pronto para próxima série!" : `Descanso: ${timeLeft}s`}
-          </span>
-          <Button variant="ghost" size="icon" onClick={resetTimer} className="size-7">
-            <RotateCcw className="size-3.5" />
-          </Button>
-        </div>
-      )}
-    </div>
-  );
+        {/* TIMER */}
+        {timeLeft !== null && (
+          <div className="flex items-center gap-2">
+            <span
+              className={`font-heading text-sm font-semibold ${
+                timeLeft === 0 ? "text-primary" : "text-foreground"
+              }`}
+            >
+              {timeLeft === 0
+                ? "Pronto para próxima série!"
+                : `Descanso: ${timeLeft}s`}
+            </span>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={resetTimer}
+              className="size-7"
+            >
+              <RotateCcw className="size-3.5" />
+            </Button>
+          </div>
+        )}
+      </>
+    )}
+  </div>
+);
 }

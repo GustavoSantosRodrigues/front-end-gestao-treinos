@@ -11,7 +11,6 @@ import { ExerciseCard } from "./_components/exercise-card";
 import { CompleteWorkoutButton } from "./_components/complete-workout-button";
 import { WorkoutTimer } from "./_components/workoutTimer";
 import { StartWorkoutButton } from "./_components/start-workout-button";
-import { SortableExerciseList } from "./_components/SortableExerciseList";
 
 
 
@@ -55,9 +54,14 @@ export default async function WorkoutDayPage({
   ]);
 
   const needsOnboarding = trainData.status === 200 && !trainData.data;
+
   if (needsOnboarding) redirect("/onboarding");
 
-  if (workoutDayData.status !== 200) redirect("/");
+  if (workoutDayData.status !== 200) {
+    console.log("❌ REDIRECT TRIGGERED - status:", workoutDayData.status);
+    console.log("❌ DATA:", JSON.stringify(workoutDayData.data));
+    redirect("/");
+  }
 
   const {
     name,
@@ -158,7 +162,7 @@ export default async function WorkoutDayPage({
         </div>
       )}
 
-      {/* <div className="flex flex-col gap-3 px-5 pt-5">
+      <div className="flex flex-col gap-3 px-5 pt-5">
         {exercises
           .sort((a, b) => a.order - b.order)
           .map((exercise) => (
@@ -170,15 +174,6 @@ export default async function WorkoutDayPage({
               sessionId={inProgressSession?.id ?? completedSession?.id}
             />
           ))}
-      </div> */}
-
-      <div className="px-5 pt-5">
-        <SortableExerciseList
-          exercises={exercises}
-          workoutPlanId={workoutPlanId}
-          workoutDayId={dayId}
-          sessionId={inProgressSession?.id ?? completedSession?.id}
-        />
       </div>
 
       {hasInProgressSession && inProgressSession && (
