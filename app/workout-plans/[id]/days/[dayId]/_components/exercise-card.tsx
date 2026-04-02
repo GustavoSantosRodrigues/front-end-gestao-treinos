@@ -94,6 +94,7 @@ export function ExerciseCard({ exercise, workoutPlanId, workoutDayId, sessionId 
     }
   };
 
+  
   return (
     <div className="flex flex-col gap-4 rounded-xl border border-border p-5">
       <div className="flex items-center justify-between">
