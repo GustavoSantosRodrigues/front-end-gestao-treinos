@@ -47,6 +47,8 @@ export default async function WorkoutPlanPage({
   if (workoutPlanData.status !== 200) redirect("/");
 
   const { name, workoutDays } = workoutPlanData.data;
+  // console.log('status', workoutPlanData.status)
+  // console.log("STATUS DAY:", workoutDays);
 
   const sortedDays = [...workoutDays].sort(
     (a, b) =>
