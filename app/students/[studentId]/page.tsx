@@ -151,14 +151,14 @@ export default async function StudentPlansPage({
           ) : (
             <Link
               key={day.id}
-              href={`/workout-plans/${activePlan.id}/days/${day.id}`}
+              href={`/workout-plans/${activePlan.id}/days/${day.id}?trainer=true`}
             >
-                 <WorkoutDayCard
+              <WorkoutDayCard
                 name={day.name}
                 weekDay={day.weekDay}
                 estimatedDurationInSeconds={day.estimatedDurationInSeconds}
                 exercisesCount={day.exercisesCount}
-                coverImageUrl={day.coverImageUrl || undefined} 
+                coverImageUrl={day.coverImageUrl || undefined}
               />
             </Link>
           )

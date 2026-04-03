@@ -11,6 +11,9 @@ interface SortableItemProps {
   workoutPlanId: string;
   workoutDayId: string;
   sessionId?: string;
+  isTrainer?: boolean;
+  weekDay?: string;
+  allExercises?: GetWorkoutDay200ExercisesItem[];
 }
 
 export function SortableItem({
@@ -18,6 +21,9 @@ export function SortableItem({
   workoutPlanId,
   workoutDayId,
   sessionId,
+  isTrainer,
+  weekDay,
+  allExercises,
 }: SortableItemProps) {
   const {
     attributes,
@@ -57,6 +63,9 @@ export function SortableItem({
           workoutPlanId={workoutPlanId}
           workoutDayId={workoutDayId}
           sessionId={sessionId}
+          isTrainer={isTrainer}
+          weekDay={weekDay}
+          allExercises={allExercises}
         />
       </div>
     </div>
