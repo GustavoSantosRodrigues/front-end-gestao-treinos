@@ -8,7 +8,7 @@ export const SignInWithGoogle = () => {
   const handleGoogleLogin = async () => {
     const { error } = await authClient.signIn.social({
       provider: "google",
-      callbackURL: `${process.env.NEXT_PUBLIC_BASE_URL ?? "https://app.gustavodevsr.xyz"}/`,
+      callbackURL: `${process.env.NEXT_PUBLIC_BASE_URL ?? "https://app.gustavodevsr.xyz"}/onboarding/role`,
     });
 
     if (error) {

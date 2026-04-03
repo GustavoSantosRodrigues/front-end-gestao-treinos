@@ -8,6 +8,9 @@ import { Weight, Ruler, BicepsFlexed, User } from "lucide-react";
 import { LogoutButton } from "./_components/logout-button";
 import { WhatsappButton } from "./_components/whatsapp-button";
 import { LogoAI } from "../_components/logo-ai";
+import { LinkTrainerForm } from "./_components/LinkTrainerForm";
+import { TrainerToggle } from "./_components/TrainerToggle";
+
 
 export default async function ProfilePage() {
   const session = await authClient.getSession({
@@ -25,18 +28,19 @@ export default async function ProfilePage() {
   if (trainData.status !== 200) {
     throw new Error("Failed to fetch user train data");
   }
+  const needsOnboarding = !trainData.data || ('incomplete' in trainData.data && trainData.data.incomplete);
+  const isTrainer = trainData.data?.isTrainer ?? false;
 
-  const needsOnboarding = !trainData.data;
-  if (needsOnboarding) redirect("/onboarding");
+  if (needsOnboarding && !isTrainer) redirect("/onboarding");
+  // se isTrainer, deixa passar e mostra o perfil mesmo sem dados completos
 
   const user = session.data.user;
   const data = trainData.data;
 
-  const weightInKg = data ? data.weightInGrams / 1000 : null;
-  const heightInCm = data?.heightInCentimeters ?? null;
-  const bodyFatPercentage = data?.bodyFatPercentage ?? null;
-  const age = data?.age ?? null;
-
+  const weightInKg = data && 'weightInGrams' in data ? data.weightInGrams / 1000 : null;
+  const heightInCm = data && 'heightInCentimeters' in data ? data.heightInCentimeters : null;
+  const bodyFatPercentage = data && 'bodyFatPercentage' in data ? data.bodyFatPercentage : null;
+  const age = data && 'age' in data ? data.age : null;
   return (
     <div className="flex min-h-svh flex-col bg-background pb-24">
       <LogoAI />
@@ -119,8 +123,11 @@ export default async function ProfilePage() {
           </div>
         </div>
 
+        <TrainerToggle isTrainer={data?.isTrainer || false} />
+        <LinkTrainerForm />
         <WhatsappButton />
         <LogoutButton />
+
       </div>
 
       <BottomNav activePage="profile" />
