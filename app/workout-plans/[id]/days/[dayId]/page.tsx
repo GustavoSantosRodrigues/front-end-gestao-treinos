@@ -37,14 +37,20 @@ const WEEKDAY_TITLE_LABELS: Record<string, string> = {
 
 export default async function WorkoutDayPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string; dayId: string }>;
+  searchParams: Promise<{ trainer?: string }>;
 }) {
   const session = await authClient.getSession({
     fetchOptions: {
       headers: await headers(),
     },
   });
+
+  const { trainer } = await searchParams;
+  const isTrainer = trainer === "true";
+
 
   if (!session.data?.user) redirect("/auth");
 
@@ -162,13 +168,16 @@ export default async function WorkoutDayPage({
           <WorkoutTimer />
         </div>
       )}
-      
+
       <div className="px-5 pt-5">
         <SortableExerciseList
+          key={exercises.map((e) => `${e.id}-${(e as unknown as { exerciseId?: string }).exerciseId ?? e.name}`).join(",")}
           exercises={exercises}
           workoutPlanId={workoutPlanId}
           workoutDayId={dayId}
           sessionId={inProgressSession?.id ?? completedSession?.id}
+          isTrainer={isTrainer}
+          weekDay={weekDay}
         />
       </div>
 

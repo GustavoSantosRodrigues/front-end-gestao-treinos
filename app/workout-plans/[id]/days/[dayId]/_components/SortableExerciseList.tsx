@@ -28,6 +28,8 @@ interface SortableExerciseListProps {
     workoutPlanId: string;
     workoutDayId: string;
     sessionId?: string;
+    isTrainer?: boolean;
+    weekDay?: string;
 }
 
 export function SortableExerciseList({
@@ -35,6 +37,8 @@ export function SortableExerciseList({
     workoutPlanId,
     workoutDayId,
     sessionId,
+    isTrainer,
+    weekDay,
 }: SortableExerciseListProps) {
     const router = useRouter();
 
@@ -121,6 +125,9 @@ export function SortableExerciseList({
                             workoutPlanId={workoutPlanId}
                             workoutDayId={workoutDayId}
                             sessionId={sessionId}
+                            isTrainer={isTrainer}
+                            weekDay={weekDay}
+                            allExercises={exercises}
                         />
                     ))}
                 </SortableContext>

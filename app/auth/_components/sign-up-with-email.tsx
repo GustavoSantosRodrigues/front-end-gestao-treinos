@@ -37,12 +37,12 @@ export const SignUpWithEmail = () => {
       name: values.userName,
       email: values.email,
       password: values.password,
-      callbackURL: "/",
+      callbackURL: "/onboarding/role"
     });
     if (error) {
       setError(error.message ?? "Erro ao criar conta.");
     } else {
-      router.push("/auth");
+      router.push("/onboarding/role");
     }
     setLoading(false);
   };

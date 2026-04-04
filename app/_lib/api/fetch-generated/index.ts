@@ -74,21 +74,26 @@ export type GetHomeData500 = {
   code: string;
 };
 
-/**
- * @nullable
- */
-export type GetUserTrainData200 = {
-  userId: string;
-  userName: string;
-  weightInGrams: number;
-  heightInCentimeters: number;
-  age: number;
-  /**
-   * @minimum 0
-   * @maximum 100
-   */
-  bodyFatPercentage: number;
-} | null;
+export type GetUserTrainData200 =
+  | {
+      userId: string;
+      userName: string;
+      weightInGrams: number;
+      heightInCentimeters: number;
+      age: number;
+      /**
+       * @minimum 0
+       * @maximum 100
+       */
+      bodyFatPercentage: number;
+      isTrainer: boolean;
+      incomplete?: boolean;
+    }
+  | {
+      isTrainer: boolean;
+      incomplete: boolean;
+    }
+  | null;
 
 export type GetUserTrainData401 = {
   error: string;
@@ -206,6 +211,10 @@ export type ListWorkoutPlans200ItemWorkoutDaysItemExercisesItem = {
   sets: number;
   reps: number;
   restTimeInSeconds: number;
+  weightSuggestion?: string;
+  notes?: string;
+  /** @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$ */
+  exerciseId?: string;
 };
 
 export type ListWorkoutPlans200ItemWorkoutDaysItem = {
@@ -345,6 +354,71 @@ export type CreateWorkoutPlan500 = {
   code: string;
 };
 
+export type UpdateWorkoutPlanBodyWorkoutDaysItemWeekDay =
+  (typeof UpdateWorkoutPlanBodyWorkoutDaysItemWeekDay)[keyof typeof UpdateWorkoutPlanBodyWorkoutDaysItemWeekDay];
+
+export const UpdateWorkoutPlanBodyWorkoutDaysItemWeekDay = {
+  MONDAY: "MONDAY",
+  TUESDAY: "TUESDAY",
+  WEDNESDAY: "WEDNESDAY",
+  THURSDAY: "THURSDAY",
+  FRIDAY: "FRIDAY",
+  SATURDAY: "SATURDAY",
+  SUNDAY: "SUNDAY",
+} as const;
+
+export type UpdateWorkoutPlanBodyWorkoutDaysItemExercisesItem = {
+  /** @minimum 0 */
+  order: number;
+  /** @minLength 1 */
+  name: string;
+  /** @minimum 1 */
+  sets: number;
+  /** @minimum 1 */
+  reps: number;
+  /** @minimum 1 */
+  restTimeInSeconds: number;
+  weightSuggestion?: string;
+  notes?: string;
+  exerciseId?: string;
+};
+
+export type UpdateWorkoutPlanBodyWorkoutDaysItem = {
+  weekDay: UpdateWorkoutPlanBodyWorkoutDaysItemWeekDay;
+  name?: string;
+  isRest?: boolean;
+  estimatedDurationInSeconds?: number;
+  coverImageUrl?: string;
+  exercises?: UpdateWorkoutPlanBodyWorkoutDaysItemExercisesItem[];
+};
+
+export type UpdateWorkoutPlanBody = {
+  /** @minLength 1 */
+  name?: string;
+  workoutDays?: UpdateWorkoutPlanBodyWorkoutDaysItem[];
+};
+
+export type UpdateWorkoutPlan200 = {
+  id: string;
+  name: string;
+  workoutPlanUpdated: boolean;
+};
+
+export type UpdateWorkoutPlan401 = {
+  error: string;
+  code: string;
+};
+
+export type UpdateWorkoutPlan404 = {
+  error: string;
+  code: string;
+};
+
+export type UpdateWorkoutPlan500 = {
+  error: string;
+  code: string;
+};
+
 export type GetWorkoutPlan200WorkoutDaysItemWeekDay =
   (typeof GetWorkoutPlan200WorkoutDaysItemWeekDay)[keyof typeof GetWorkoutPlan200WorkoutDaysItemWeekDay];
 
@@ -426,6 +500,7 @@ export type GetWorkoutDay200ExercisesItem = {
   weightSuggestion?: string;
   notes?: string;
   gifUrl?: string;
+  exerciseId?: string;
   logs: GetWorkoutDay200ExercisesItemLogsItem[];
 };
 
@@ -590,15 +665,15 @@ export type GetExerciseLogs500 = {
   code: string;
 };
 
-export type PatchWorkoutPlansWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderBodyExercisesItem =
+export type PatchWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderBodyExercisesItem =
   {
     id: string;
     order: number;
   };
 
-export type PatchWorkoutPlansWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderBody =
+export type PatchWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderBody =
   {
-    exercises: PatchWorkoutPlansWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderBodyExercisesItem[];
+    exercises: PatchWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderBodyExercisesItem[];
   };
 
 export type PostAiBodyMessagesItemRole =
@@ -649,35 +724,144 @@ export type PostNutritionAiBody = {
 
 export type GetExercisesParams = {
   muscles?: string;
-  equipment?: string;
-  difficulty?: string;
-  tags?: string;
 };
 
 export type GetExercises200Item = {
   id: string;
-  name: string;
+  /** @nullable */
+  name: string | null;
   muscles: string[];
-  equipment: string;
-  difficulty: string;
-  gifUrl: string;
-  tags: string[];
-  createdAt: string;
+  /** @nullable */
+  gifUrl: string | null;
 };
 
 export type GetExercisesId200 = {
   id: string;
-  name: string;
+  /** @nullable */
+  name: string | null;
   muscles: string[];
-  equipment: string;
-  difficulty: string;
-  gifUrl: string;
-  tags: string[];
-  createdAt: string;
+  /** @nullable */
+  gifUrl: string | null;
 };
 
 export type GetExercisesId404 = {
   error: string;
+};
+
+export type BecomeTrainerBody = {
+  isTrainer: boolean;
+};
+
+export type BecomeTrainer200 = {
+  isTrainer: boolean;
+};
+
+export type BecomeTrainer401 = {
+  error: string;
+  code: string;
+};
+
+export type BecomeTrainer500 = {
+  error: string;
+  code: string;
+};
+
+export type LinkTrainerBody = {
+  /** @pattern ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$ */
+  trainerEmail: string;
+};
+
+export type LinkTrainer200 = {
+  id: string;
+  status: string;
+  trainerId: string;
+  studentId: string;
+};
+
+export type LinkTrainer400 = {
+  error: string;
+  code: string;
+};
+
+export type LinkTrainer401 = {
+  error: string;
+  code: string;
+};
+
+export type LinkTrainer500 = {
+  error: string;
+  code: string;
+};
+
+export type GetMyStudents200ItemStudent = {
+  id: string;
+  name: string;
+  email: string;
+  /** @nullable */
+  image: string | null;
+};
+
+export type GetMyStudents200Item = {
+  id: string;
+  status: string;
+  createdAt: string;
+  student: GetMyStudents200ItemStudent;
+};
+
+export type GetMyStudents401 = {
+  error: string;
+  code: string;
+};
+
+export type GetMyStudents500 = {
+  error: string;
+  code: string;
+};
+
+export type RespondStudentRequestBodyAction =
+  (typeof RespondStudentRequestBodyAction)[keyof typeof RespondStudentRequestBodyAction];
+
+export const RespondStudentRequestBodyAction = {
+  accept: "accept",
+  reject: "reject",
+} as const;
+
+export type RespondStudentRequestBody = {
+  action: RespondStudentRequestBodyAction;
+};
+
+export type RespondStudentRequest200 = {
+  status: string;
+};
+
+export type RespondStudentRequest401 = {
+  error: string;
+  code: string;
+};
+
+export type RespondStudentRequest404 = {
+  error: string;
+  code: string;
+};
+
+export type RespondStudentRequest500 = {
+  error: string;
+  code: string;
+};
+
+export type GetStudentPlans401 = {
+  error: string;
+  code: string;
+};
+
+export type GetStudentPlans404 = {
+  error: string;
+  code: string;
+};
+
+export type GetStudentPlans500 = {
+  error: string;
+  code: string;
 };
 
 export type Get200 = {
@@ -1009,6 +1193,64 @@ export const createWorkoutPlan = async (
     headers: { "Content-Type": "application/json", ...options?.headers },
     body: JSON.stringify(createWorkoutPlanBody),
   });
+};
+
+/**
+ * @summary Update a workout plan
+ */
+export type updateWorkoutPlanResponse200 = {
+  data: UpdateWorkoutPlan200;
+  status: 200;
+};
+
+export type updateWorkoutPlanResponse401 = {
+  data: UpdateWorkoutPlan401;
+  status: 401;
+};
+
+export type updateWorkoutPlanResponse404 = {
+  data: UpdateWorkoutPlan404;
+  status: 404;
+};
+
+export type updateWorkoutPlanResponse500 = {
+  data: UpdateWorkoutPlan500;
+  status: 500;
+};
+
+export type updateWorkoutPlanResponseSuccess = updateWorkoutPlanResponse200 & {
+  headers: Headers;
+};
+export type updateWorkoutPlanResponseError = (
+  | updateWorkoutPlanResponse401
+  | updateWorkoutPlanResponse404
+  | updateWorkoutPlanResponse500
+) & {
+  headers: Headers;
+};
+
+export type updateWorkoutPlanResponse =
+  | updateWorkoutPlanResponseSuccess
+  | updateWorkoutPlanResponseError;
+
+export const getUpdateWorkoutPlanUrl = (workoutPlanId: string) => {
+  return `/workout-plans/${workoutPlanId}`;
+};
+
+export const updateWorkoutPlan = async (
+  workoutPlanId: string,
+  updateWorkoutPlanBody: UpdateWorkoutPlanBody,
+  options?: RequestInit,
+): Promise<updateWorkoutPlanResponse> => {
+  return customFetch<updateWorkoutPlanResponse>(
+    getUpdateWorkoutPlanUrl(workoutPlanId),
+    {
+      ...options,
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", ...options?.headers },
+      body: JSON.stringify(updateWorkoutPlanBody),
+    },
+  );
 };
 
 /**
@@ -1386,33 +1628,33 @@ export const getExerciseLogs = async (
 /**
  * @summary Reorder exercises
  */
-export type patchWorkoutPlansWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderResponse200 =
+export type patchWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderResponse200 =
   {
     data: void;
     status: 200;
   };
 
-export type patchWorkoutPlansWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderResponseSuccess =
-  patchWorkoutPlansWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderResponse200 & {
+export type patchWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderResponseSuccess =
+  patchWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderResponse200 & {
     headers: Headers;
   };
-export type patchWorkoutPlansWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderResponse =
-  patchWorkoutPlansWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderResponseSuccess;
+export type patchWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderResponse =
+  patchWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderResponseSuccess;
 
-export const getPatchWorkoutPlansWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderUrl =
+export const getPatchWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderUrl =
   (workoutPlanId: string, workoutDayId: string) => {
-    return `/workout-plans/workout-plans/${workoutPlanId}/days/${workoutDayId}/exercises/reorder`;
+    return `/workout-plans/${workoutPlanId}/days/${workoutDayId}/exercises/reorder`;
   };
 
-export const patchWorkoutPlansWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorder =
+export const patchWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorder =
   async (
     workoutPlanId: string,
     workoutDayId: string,
-    patchWorkoutPlansWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderBody: PatchWorkoutPlansWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderBody,
+    patchWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderBody: PatchWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderBody,
     options?: RequestInit,
-  ): Promise<patchWorkoutPlansWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderResponse> => {
-    return customFetch<patchWorkoutPlansWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderResponse>(
-      getPatchWorkoutPlansWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderUrl(
+  ): Promise<patchWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderResponse> => {
+    return customFetch<patchWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderResponse>(
+      getPatchWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderUrl(
         workoutPlanId,
         workoutDayId,
       ),
@@ -1421,7 +1663,7 @@ export const patchWorkoutPlansWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercises
         method: "PATCH",
         headers: { "Content-Type": "application/json", ...options?.headers },
         body: JSON.stringify(
-          patchWorkoutPlansWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderBody,
+          patchWorkoutPlansWorkoutPlanIdDaysWorkoutDayIdExercisesReorderBody,
         ),
       },
     );
@@ -1703,6 +1945,267 @@ export const getExercisesId = async (
     ...options,
     method: "GET",
   });
+};
+
+/**
+ * @summary Become a trainer
+ */
+export type becomeTrainerResponse200 = {
+  data: BecomeTrainer200;
+  status: 200;
+};
+
+export type becomeTrainerResponse401 = {
+  data: BecomeTrainer401;
+  status: 401;
+};
+
+export type becomeTrainerResponse500 = {
+  data: BecomeTrainer500;
+  status: 500;
+};
+
+export type becomeTrainerResponseSuccess = becomeTrainerResponse200 & {
+  headers: Headers;
+};
+export type becomeTrainerResponseError = (
+  | becomeTrainerResponse401
+  | becomeTrainerResponse500
+) & {
+  headers: Headers;
+};
+
+export type becomeTrainerResponse =
+  | becomeTrainerResponseSuccess
+  | becomeTrainerResponseError;
+
+export const getBecomeTrainerUrl = () => {
+  return `/trainer/become`;
+};
+
+export const becomeTrainer = async (
+  becomeTrainerBody: BecomeTrainerBody,
+  options?: RequestInit,
+): Promise<becomeTrainerResponse> => {
+  return customFetch<becomeTrainerResponse>(getBecomeTrainerUrl(), {
+    ...options,
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(becomeTrainerBody),
+  });
+};
+
+/**
+ * @summary Link a trainer by email
+ */
+export type linkTrainerResponse200 = {
+  data: LinkTrainer200;
+  status: 200;
+};
+
+export type linkTrainerResponse400 = {
+  data: LinkTrainer400;
+  status: 400;
+};
+
+export type linkTrainerResponse401 = {
+  data: LinkTrainer401;
+  status: 401;
+};
+
+export type linkTrainerResponse500 = {
+  data: LinkTrainer500;
+  status: 500;
+};
+
+export type linkTrainerResponseSuccess = linkTrainerResponse200 & {
+  headers: Headers;
+};
+export type linkTrainerResponseError = (
+  | linkTrainerResponse400
+  | linkTrainerResponse401
+  | linkTrainerResponse500
+) & {
+  headers: Headers;
+};
+
+export type linkTrainerResponse =
+  | linkTrainerResponseSuccess
+  | linkTrainerResponseError;
+
+export const getLinkTrainerUrl = () => {
+  return `/trainer/link`;
+};
+
+export const linkTrainer = async (
+  linkTrainerBody: LinkTrainerBody,
+  options?: RequestInit,
+): Promise<linkTrainerResponse> => {
+  return customFetch<linkTrainerResponse>(getLinkTrainerUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(linkTrainerBody),
+  });
+};
+
+/**
+ * @summary Get my students
+ */
+export type getMyStudentsResponse200 = {
+  data: GetMyStudents200Item[];
+  status: 200;
+};
+
+export type getMyStudentsResponse401 = {
+  data: GetMyStudents401;
+  status: 401;
+};
+
+export type getMyStudentsResponse500 = {
+  data: GetMyStudents500;
+  status: 500;
+};
+
+export type getMyStudentsResponseSuccess = getMyStudentsResponse200 & {
+  headers: Headers;
+};
+export type getMyStudentsResponseError = (
+  | getMyStudentsResponse401
+  | getMyStudentsResponse500
+) & {
+  headers: Headers;
+};
+
+export type getMyStudentsResponse =
+  | getMyStudentsResponseSuccess
+  | getMyStudentsResponseError;
+
+export const getGetMyStudentsUrl = () => {
+  return `/trainer/students`;
+};
+
+export const getMyStudents = async (
+  options?: RequestInit,
+): Promise<getMyStudentsResponse> => {
+  return customFetch<getMyStudentsResponse>(getGetMyStudentsUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+/**
+ * @summary Accept or reject a student
+ */
+export type respondStudentRequestResponse200 = {
+  data: RespondStudentRequest200;
+  status: 200;
+};
+
+export type respondStudentRequestResponse401 = {
+  data: RespondStudentRequest401;
+  status: 401;
+};
+
+export type respondStudentRequestResponse404 = {
+  data: RespondStudentRequest404;
+  status: 404;
+};
+
+export type respondStudentRequestResponse500 = {
+  data: RespondStudentRequest500;
+  status: 500;
+};
+
+export type respondStudentRequestResponseSuccess =
+  respondStudentRequestResponse200 & {
+    headers: Headers;
+  };
+export type respondStudentRequestResponseError = (
+  | respondStudentRequestResponse401
+  | respondStudentRequestResponse404
+  | respondStudentRequestResponse500
+) & {
+  headers: Headers;
+};
+
+export type respondStudentRequestResponse =
+  | respondStudentRequestResponseSuccess
+  | respondStudentRequestResponseError;
+
+export const getRespondStudentRequestUrl = (linkId: string) => {
+  return `/trainer/students/${linkId}`;
+};
+
+export const respondStudentRequest = async (
+  linkId: string,
+  respondStudentRequestBody: RespondStudentRequestBody,
+  options?: RequestInit,
+): Promise<respondStudentRequestResponse> => {
+  return customFetch<respondStudentRequestResponse>(
+    getRespondStudentRequestUrl(linkId),
+    {
+      ...options,
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", ...options?.headers },
+      body: JSON.stringify(respondStudentRequestBody),
+    },
+  );
+};
+
+/**
+ * @summary Get student workout plans
+ */
+export type getStudentPlansResponse200 = {
+  data: unknown[];
+  status: 200;
+};
+
+export type getStudentPlansResponse401 = {
+  data: GetStudentPlans401;
+  status: 401;
+};
+
+export type getStudentPlansResponse404 = {
+  data: GetStudentPlans404;
+  status: 404;
+};
+
+export type getStudentPlansResponse500 = {
+  data: GetStudentPlans500;
+  status: 500;
+};
+
+export type getStudentPlansResponseSuccess = getStudentPlansResponse200 & {
+  headers: Headers;
+};
+export type getStudentPlansResponseError = (
+  | getStudentPlansResponse401
+  | getStudentPlansResponse404
+  | getStudentPlansResponse500
+) & {
+  headers: Headers;
+};
+
+export type getStudentPlansResponse =
+  | getStudentPlansResponseSuccess
+  | getStudentPlansResponseError;
+
+export const getGetStudentPlansUrl = (studentId: string) => {
+  return `/trainer/students/${studentId}/plans`;
+};
+
+export const getStudentPlans = async (
+  studentId: string,
+  options?: RequestInit,
+): Promise<getStudentPlansResponse> => {
+  return customFetch<getStudentPlansResponse>(
+    getGetStudentPlansUrl(studentId),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
 };
 
 /**

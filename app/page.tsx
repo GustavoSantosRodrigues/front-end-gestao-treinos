@@ -45,8 +45,12 @@ export default async function Home() {
     throw new Error("Failed to fetch home data");
   }
 
-  const needsOnboarding = trainData.status === 200 && !trainData.data;
-  if (needsOnboarding) redirect("/onboarding");
+  const data = trainData.status === 200 ? trainData.data : null;
+  const isTrainer = data?.isTrainer ?? false;
+  const hasFullData = data && 'weightInGrams' in data;
+
+  if (!hasFullData && isTrainer) redirect("/profile");
+  if (!hasFullData && !isTrainer) redirect("/onboarding");
 
   const { todayWorkoutDay, workoutStreak, consistencyByDay } = homeData.data;
   const userName = session.data.user.name?.split(" ")[0] ?? "";
