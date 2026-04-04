@@ -90,6 +90,7 @@ export function SwapExerciseModal({
       const selected = dbExercises.find((e) => e.id === selectedId);
       if (!selected) return;
 
+      type ExerciseWithId = GetWorkoutDay200ExercisesItem & { exerciseId?: string };
       const updatedExercises = allExercises.map((ex) => ({
         order: ex.order,
         name: ex.id === exercise.id ? selected.name : ex.name,
@@ -98,18 +99,18 @@ export function SwapExerciseModal({
         restTimeInSeconds: ex.restTimeInSeconds,
         weightSuggestion: ex.weightSuggestion ?? undefined,
         notes: ex.notes ?? undefined,
-        exerciseId: ex.id === exercise.id ? selected.id : (ex as { exerciseId?: string }).exerciseId ?? undefined,
+        exerciseId: ex.id === exercise.id ? selected.id : (ex as ExerciseWithId).exerciseId,
       }));
 
+      console.log("updatedExercises:", JSON.stringify(updatedExercises, null, 2));
       await clientFetch(`/workout-plans/${workoutPlanId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ workoutDays: [{ weekDay, exercises: updatedExercises }] }),
       });
 
-      router.refresh();
-      await new Promise((resolve) => setTimeout(resolve, 200));
       onClose();
+      router.refresh();
     } catch {
     } finally {
       setSaving(false);

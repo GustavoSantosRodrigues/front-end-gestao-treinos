@@ -171,6 +171,7 @@ export default async function WorkoutDayPage({
 
       <div className="px-5 pt-5">
         <SortableExerciseList
+          key={exercises.map((e) => `${e.id}-${(e as unknown as { exerciseId?: string }).exerciseId ?? e.name}`).join(",")}
           exercises={exercises}
           workoutPlanId={workoutPlanId}
           workoutDayId={dayId}
