@@ -7,11 +7,11 @@ import { Calendar, Timer, Dumbbell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BottomNav } from "@/app/_components/bottom-nav";
 import { BackButton } from "./_components/back-button";
-import { ExerciseCard } from "./_components/exercise-card";
 import { CompleteWorkoutButton } from "./_components/complete-workout-button";
 import { WorkoutTimer } from "./_components/workoutTimer";
 import { StartWorkoutButton } from "./_components/start-workout-button";
 import { SortableExerciseList } from "./_components/SortableExerciseList";
+import { TrainerDayEditor } from "./_components/trainerDayEditor";
 
 
 
@@ -162,6 +162,13 @@ export default async function WorkoutDayPage({
         </div>
       </div>
 
+      {isTrainer && (
+        <TrainerDayEditor
+          workoutPlanId={workoutPlanId}
+          weekDay={weekDay}
+          currentName={name}
+        />
+      )}
 
       {hasInProgressSession && (
         <div className="px-5 pt-3">

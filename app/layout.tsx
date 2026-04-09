@@ -5,6 +5,7 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Chat } from "@/app/_components/chat";
 import { UpdateNotification } from "@/app/_components/update-notification";
 import "./globals.css";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -97,6 +98,7 @@ export default function RootLayout({
             <Chat />
           </Suspense>
           <UpdateNotification />
+          <Toaster />
         </NuqsAdapter>
       </body>
     </html>
