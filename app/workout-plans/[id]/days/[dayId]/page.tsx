@@ -147,6 +147,7 @@ export default async function WorkoutDayPage({
               <StartWorkoutButton
                 workoutPlanId={workoutPlanId}
                 workoutDayId={dayId}
+                weekDay={weekDay}
               />
             )}
             {hasCompletedSession && (

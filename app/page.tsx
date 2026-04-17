@@ -150,6 +150,7 @@ export default async function Home() {
                 workoutDayId={todayWorkoutDay.id}
                 sessionStatus={todayWorkoutDay.sessionStatus}
                 sessionId={todayWorkoutDay.sessionId}
+                weekDay={todayWorkoutDay.weekDay}
               />
             </div>
           </div>
