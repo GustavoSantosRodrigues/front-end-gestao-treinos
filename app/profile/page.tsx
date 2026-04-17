@@ -24,11 +24,14 @@ interface TrainerLink {
   };
 }
 
+
+
 async function getMyTrainers() {
-  return customFetch<TrainerLink[]>("/trainer/my-trainers", {
+  return customFetch<{ status: number; data: TrainerLink[] }>("/trainer/my-trainers", {
     method: "GET",
   });
 }
+
 export default async function ProfilePage() {
   const session = await authClient.getSession({
     fetchOptions: { headers: await headers() },
@@ -50,13 +53,14 @@ export default async function ProfilePage() {
 
   const user = session.data.user;
   const data = trainData.data;
-  const trainers = Array.isArray(trainersData) ? trainersData : [];
+  const trainers = trainersData.status === 200 ? trainersData.data : [];
 
   const weightInKg = data && "weightInGrams" in data ? data.weightInGrams / 1000 : null;
   const heightInCm = data && "heightInCentimeters" in data ? data.heightInCentimeters : null;
   const bodyFatPercentage = data && "bodyFatPercentage" in data ? data.bodyFatPercentage : null;
   const age = data && "age" in data ? data.age : null;
 
+  
   return (
     <div className="flex min-h-svh flex-col bg-background pb-24">
       <LogoAI />
@@ -65,7 +69,7 @@ export default async function ProfilePage() {
         {/* Avatar + Nome */}
         <div className="flex w-full items-center justify-between">
           <div className="flex items-center gap-3">
-            <Avatar className="size-[52px]">
+            <Avatar className="size-13">
               <AvatarImage src={user.image ?? undefined} alt={user.name} />
               <AvatarFallback className="text-lg">
                 {user.name?.charAt(0)?.toUpperCase()}
@@ -91,7 +95,7 @@ export default async function ProfilePage() {
             { icon: User, value: age ?? "-", label: "Anos" },
           ].map(({ icon: Icon, value, label }) => (
             <div key={label} className="flex flex-col items-center gap-5 rounded-xl bg-primary/8 p-5">
-              <div className="flex items-center rounded-full bg-primary/8 p-[9px]">
+              <div className="flex items-center rounded-full bg-primary/8 p-2.25">
                 <Icon className="size-4 text-primary" />
               </div>
               <div className="flex flex-col items-center gap-1.5">
@@ -119,7 +123,7 @@ export default async function ProfilePage() {
             {trainers.map((link) => (
               <div key={link.id} className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Avatar className="size-9">
+                  <Avatar className="size-13">
                     <AvatarImage src={link.trainer.image ?? undefined} />
                     <AvatarFallback>
                       {link.trainer.name?.charAt(0)?.toUpperCase()}
