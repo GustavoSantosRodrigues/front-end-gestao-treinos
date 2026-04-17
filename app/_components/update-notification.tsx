@@ -119,6 +119,17 @@ export function UpdateNotification() {
               </p>
             </div>
           </li>
+          <li className="flex items-start gap-3">
+            <span className="text-xl">👥</span>
+            <div className="flex flex-col gap-0.5">
+              <p className="font-heading text-sm font-semibold text-background">
+                Meus Personais no perfil
+              </p>
+              <p className="font-heading text-xs text-background/60">
+                Alunos podem ver quais personais estão vinculados à sua conta direto no perfil
+              </p>
+            </div>
+          </li>
         </ul>
       </div>
 
