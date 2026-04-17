@@ -25,11 +25,10 @@ interface TrainerLink {
 }
 
 async function getMyTrainers() {
-  return customFetch<{ status: number; data: TrainerLink[] }>("/trainer/my-trainers", {
+  return customFetch<TrainerLink[]>("/trainer/my-trainers", {
     method: "GET",
   });
 }
-
 export default async function ProfilePage() {
   const session = await authClient.getSession({
     fetchOptions: { headers: await headers() },
@@ -51,7 +50,7 @@ export default async function ProfilePage() {
 
   const user = session.data.user;
   const data = trainData.data;
-  const trainers = trainersData.status === 200 ? trainersData.data : [];
+  const trainers = Array.isArray(trainersData) ? trainersData : [];
 
   const weightInKg = data && "weightInGrams" in data ? data.weightInGrams / 1000 : null;
   const heightInCm = data && "heightInCentimeters" in data ? data.heightInCentimeters : null;
