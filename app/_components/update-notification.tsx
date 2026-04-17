@@ -76,46 +76,46 @@ export function UpdateNotification() {
         </p>
         <ul className="flex flex-col gap-4">
           <li className="flex items-start gap-3">
-            <span className="text-xl">🥗</span>
+            <span className="text-xl">👨‍💼</span>
             <div className="flex flex-col gap-0.5">
               <p className="font-heading text-sm font-semibold text-background">
-                Plano nutricional com IA
+                Sistema de Personal Trainer
               </p>
               <p className="font-heading text-xs text-background/60">
-                Monte seu plano alimentar personalizado conversando com a IA, com refeições, macros e substituições
+                Personais podem ver e editar treinos dos alunos, trocar exercícios e personalizar o plano
               </p>
             </div>
           </li>
           <li className="flex items-start gap-3">
-            <span className="text-xl">⚡</span>
+            <span className="text-xl">🔥</span>
             <div className="flex flex-col gap-0.5">
               <p className="font-heading text-sm font-semibold text-background">
-                Iniciar treino pela home
+                Streak melhorado
               </p>
               <p className="font-heading text-xs text-background/60">
-                Inicie, continue ou veja o status do treino direto na tela inicial
+                Conta qualquer treino concluído, não zera mais por faltar um dia e acumula entre semanas
               </p>
             </div>
           </li>
           <li className="flex items-start gap-3">
-            <span className="text-xl">🏠</span>
+            <span className="text-xl">🖼️</span>
             <div className="flex flex-col gap-0.5">
               <p className="font-heading text-sm font-semibold text-background">
-                Macros na home
+                Upload de imagem de capa
               </p>
               <p className="font-heading text-xs text-background/60">
-                Acompanhe calorias, proteína, carboidratos e gordura do dia sem precisar entrar no plano
+                Personais podem personalizar a imagem de capa de cada dia de treino do aluno
               </p>
             </div>
           </li>
           <li className="flex items-start gap-3">
-            <span className="text-xl">💪</span>
+            <span className="text-xl">✏️</span>
             <div className="flex flex-col gap-0.5">
               <p className="font-heading text-sm font-semibold text-background">
-                Atualização de treino aprimorada
+                Edição de título do treino
               </p>
               <p className="font-heading text-xs text-background/60">
-                Troque exercícios, acrescente novos, espelhe treinos entre dias e a tela atualiza automaticamente
+                Personais podem editar o título de cada dia de treino diretamente pelo app
               </p>
             </div>
           </li>
