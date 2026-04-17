@@ -40,7 +40,7 @@ export async function BottomNav({ activePage = "home" }: BottomNavProps) {
         <House
           className={cn(
             "size-6",
-            activePage === "home" ? "text-foreground" : "text-muted-foreground"
+            activePage === "home" ? "text-primary" : "text-foreground/30"
           )}
         />
       </Link>
@@ -51,8 +51,8 @@ export async function BottomNav({ activePage = "home" }: BottomNavProps) {
             className={cn(
               "size-6",
               activePage === "calendar"
-                ? "text-foreground"
-                : "text-muted-foreground"
+                ? "text-primary"
+                : "text-foreground/30"
             )}
           />
         </Link>
@@ -62,8 +62,8 @@ export async function BottomNav({ activePage = "home" }: BottomNavProps) {
             className={cn(
               "size-6",
               activePage === "calendar"
-                ? "text-foreground"
-                : "text-muted-foreground"
+                ? "text-primary"
+                : "text-foreground/30"
             )}
           />
         </button>
@@ -76,8 +76,8 @@ export async function BottomNav({ activePage = "home" }: BottomNavProps) {
           className={cn(
             "size-6",
             activePage === "nutrition"
-              ? "text-foreground"
-              : "text-muted-foreground"
+              ? "text-primary"
+              : "text-foreground/30"
           )}
         />
       </Link>
@@ -87,8 +87,8 @@ export async function BottomNav({ activePage = "home" }: BottomNavProps) {
           className={cn(
             "size-6",
             activePage === "stats"
-              ? "text-foreground"
-              : "text-muted-foreground"
+              ? "text-primary"
+              : "text-foreground/30"
           )}
         />
       </Link>
@@ -98,8 +98,8 @@ export async function BottomNav({ activePage = "home" }: BottomNavProps) {
           className={cn(
             "size-6",
             activePage === "profile"
-              ? "text-foreground"
-              : "text-muted-foreground"
+              ? "text-primary"
+              : "text-foreground/30"
           )}
         />
       </Link>
@@ -110,8 +110,8 @@ export async function BottomNav({ activePage = "home" }: BottomNavProps) {
             className={cn(
               "size-6",
               activePage === "students"
-                ? "text-foreground"
-                : "text-muted-foreground"
+                ? "text-primary"
+                : "text-foreground/30"
             )}
           />
         </Link>

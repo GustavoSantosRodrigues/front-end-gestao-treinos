@@ -78,7 +78,7 @@ export default async function StudentsPage() {
                 )}
             </div>
 
-            <BottomNav activePage="profile" />
+          <BottomNav activePage="students" />
         </div>
     );
 }
