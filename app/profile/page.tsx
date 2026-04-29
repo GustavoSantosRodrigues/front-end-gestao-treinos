@@ -12,6 +12,7 @@ import { WhatsappButton } from "./_components/whatsapp-button";
 import { LogoAI } from "../_components/logo-ai";
 import { LinkTrainerForm } from "./_components/LinkTrainerForm";
 import { TrainerToggle } from "./_components/TrainerToggle";
+import { FeedbackForm } from "./_components/feedback-form";
 
 interface TrainerLink {
   id: string;
@@ -151,6 +152,7 @@ export default async function ProfilePage() {
 
         <TrainerToggle isTrainer={data?.isTrainer || false} />
         <LinkTrainerForm />
+        <FeedbackForm />
         <WhatsappButton />
         <LogoutButton />
       </div>
