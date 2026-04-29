@@ -15,12 +15,10 @@ export function FeedbackForm() {
     if (!message.trim()) return;
     setLoading(true);
     try {
-      await fetch(WEBHOOK_URL, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/discord-feedback`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          content: `💬 **Novo Feedback GS.AI**\n\n${message}`,
-        }),
+        body: JSON.stringify({ message }),
       });
       toast.success("Feedback enviado! Obrigado 🙏");
       setMessage("");
